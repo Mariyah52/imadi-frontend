@@ -6,11 +6,8 @@ import { Button } from "./ui/Button";
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/customers", label: "Customers", end: false },
-  { to: "/suppliers", label: "Suppliers", end: false },
   { to: "/inventory", label: "Inventory", end: false },
   { to: "/invoices", label: "Invoices", end: false },
-  { to: "/purchasing/orders", label: "Purchase orders", end: false },
-  { to: "/purchasing/bills", label: "Bills", end: false },
   { to: "/vat", label: "VAT", end: false },
   { to: "/reports", label: "Reports", end: false },
   { to: "/accounting", label: "Accounting", end: false },

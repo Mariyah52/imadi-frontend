@@ -17,7 +17,7 @@ export function CreateInvoicePage() {
   const navigate = useNavigate();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [issueDate, setIssueDate] = useState(todayISO());
-  const [dueDate, setDueDate] = useState(todayISO());
+  const [dueDate, setDueDate] = useState(new Date(Date.now() + 7*24*60*60*1000).toISOString().slice(0,10));
   const [items, setItems] = useState<InvoiceItemCreateRequest[]>([emptyItem()]);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
