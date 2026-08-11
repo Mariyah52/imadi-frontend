@@ -7,7 +7,7 @@ import { LOGO_DATA_URI } from "../../assets/logo";
 const COMPANY = {
   name: "IMADI FULFILMENT AND LOGISTICS LTD",
   addressLine: "195 North Road, Clayton, M11 4NF",
-  email: "Imadilogistics@gmail.com",
+  email: "Accounts@imadi.co.uk",
   vatNumber: "489 7509 21",
 };
 
