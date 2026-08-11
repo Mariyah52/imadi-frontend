@@ -41,3 +41,10 @@ export function duplicateInvoice(id: string) {
 export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
+
+export function emailInvoice(id: string) {
+  return apiRequest<{ sent: boolean; message?: string }>(`/invoices/${id}/email`, {
+    method: "POST",
+    body: {},
+  });
+}

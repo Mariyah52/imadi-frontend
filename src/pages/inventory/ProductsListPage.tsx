@@ -57,7 +57,12 @@ export function ProductsListPage() {
           </p>
         </div>
         {hasPermission("inventory:manage") && (
-          <Button onClick={() => setShowCreate(true)}>New product</Button>
+          <div className="flex gap-2">
+            <Link to="/inventory/warehouses">
+              <Button variant="secondary">Warehouses</Button>
+            </Link>
+            <Button onClick={() => setShowCreate(true)}>New product</Button>
+          </div>
         )}
       </div>
 

@@ -9,6 +9,7 @@ import { SuppliersListPage } from "./pages/suppliers/SuppliersListPage";
 import { SupplierDetailPage } from "./pages/suppliers/SupplierDetailPage";
 import { ProductsListPage } from "./pages/inventory/ProductsListPage";
 import { ProductDetailPage } from "./pages/inventory/ProductDetailPage";
+import { WarehousesPage } from "./pages/inventory/WarehousesPage";
 import { InvoicesListPage } from "./pages/invoices/InvoicesListPage";
 import { InvoiceDetailPage } from "./pages/invoices/InvoiceDetailPage";
 import { CreateInvoicePage } from "./pages/invoices/CreateInvoicePage";
@@ -128,6 +129,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <ProductsListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/inventory/warehouses"
+        element={
+          <ProtectedRoute>
+            <WarehousesPage />
           </ProtectedRoute>
         }
       />

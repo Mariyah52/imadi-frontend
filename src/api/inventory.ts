@@ -40,6 +40,14 @@ export function createProduct(body: ProductCreateRequest) {
   return apiRequest<Product>("/inventory/products", { method: "POST", body });
 }
 
+export function createWarehouse(body: { code: string; name: string }) {
+  return apiRequest<Warehouse>("/inventory/warehouses", { method: "POST", body });
+}
+
+export function createCategory(body: { name: string; description?: string }) {
+  return apiRequest<Category>("/inventory/categories", { method: "POST", body });
+}
+
 export function listStockForProduct(id: string) {
   return apiRequest<StockItem[]>(`/inventory/products/${id}/stock`);
 }

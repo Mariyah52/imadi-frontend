@@ -33,7 +33,9 @@ export function InvoicesListPage() {
     setLoading(true);
     listInvoices(undefined, status || undefined, page, pageSize)
       .then((res) => {
-        setItems(res.items);
+        setItems(
+          res.items.slice().sort((a, b) => b.invoice_number.localeCompare(a.invoice_number)),
+        );
         setTotal(res.total);
       })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load invoices."))

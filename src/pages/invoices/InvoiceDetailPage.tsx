@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { cancelInvoice, duplicateInvoice, getInvoice, postInvoice } from "../../api/invoices";
+import { cancelInvoice, duplicateInvoice, emailInvoice, getInvoice, postInvoice } from "../../api/invoices";
 import { getCustomerProfile, listAddresses } from "../../api/customers";
 import type { Address, Invoice } from "../../types/api";
 import { Card } from "../../components/ui/Card";
@@ -34,6 +34,7 @@ export function InvoiceDetailPage() {
   const [busy, setBusy] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showCancelReason, setShowCancelReason] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
   function load() {
@@ -93,6 +94,21 @@ export function InvoiceDetailPage() {
       navigate(`/invoices/${copy.id}`);
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Couldn't duplicate the invoice.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleEmail() {
+    if (!id) return;
+    setBusy(true);
+    setActionError(null);
+    setEmailSent(false);
+    try {
+      await emailInvoice(id);
+      setEmailSent(true);
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Couldn't send the email.");
     } finally {
       setBusy(false);
     }
@@ -179,7 +195,12 @@ export function InvoiceDetailPage() {
         >
           Send via WhatsApp
         </Button>
+        <Button variant="secondary" disabled={busy} onClick={handleEmail}>
+          Send email
+        </Button>
       </div>
+
+      {emailSent && <p className="mb-4 text-sm text-positive">Email sent.</p>}
 
       {showCancelReason && (
         <Card className="p-4 mb-6 flex items-end gap-2">
