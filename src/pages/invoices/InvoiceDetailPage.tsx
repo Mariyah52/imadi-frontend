@@ -126,11 +126,12 @@ export function InvoiceDetailPage() {
 
   return (
     <div>
-      <Link to="/invoices" className="text-sm text-navy-800 hover:underline">
+      <Link to="/invoices" className="text-sm text-navy-800 hover:underline no-print">
         ← Invoices
       </Link>
 
-      <InvoiceLetterhead />
+      <div className="print:max-w-2xl print:mx-auto">
+        <InvoiceLetterhead />
 
       <div className="mt-3 mb-6 flex items-start justify-between gap-6">
         <InvoiceBillTo customerName={customerName ?? "…"} address={billingAddress} />
@@ -279,6 +280,7 @@ export function InvoiceDetailPage() {
       <Card className="p-5 mt-6">
         <InvoicePaymentDetails invoiceNumber={invoice.invoice_number} />
       </Card>
+      </div>
 
       {showPayment && (
         <RecordPaymentModal
