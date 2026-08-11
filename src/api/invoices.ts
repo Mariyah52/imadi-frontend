@@ -42,9 +42,25 @@ export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
 
-export function emailInvoice(id: string) {
-  return apiRequest<{ sent: boolean; message?: string }>(`/invoices/${id}/email`, {
+export function emailInvoice(id: string, toEmail: string, message?: string) {
+  return apiRequest<void>(`/invoices/${id}/email`, {
     method: "POST",
-    body: {},
+    body: { to_email: toEmail, message },
   });
+}
+
+export function updateInvoice(
+  id: string,
+  body: Partial<{
+    issue_date: string;
+    due_date: string;
+    items: InvoiceCreateRequest["items"];
+    discount_percent: string;
+    discount_amount: string;
+    shipping_amount: string;
+    notes: string;
+    terms: string;
+  }>,
+) {
+  return apiRequest<Invoice>(`/invoices/${id}`, { method: "PATCH", body });
 }

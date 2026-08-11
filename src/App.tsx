@@ -13,6 +13,7 @@ import { WarehousesPage } from "./pages/inventory/WarehousesPage";
 import { InvoicesListPage } from "./pages/invoices/InvoicesListPage";
 import { InvoiceDetailPage } from "./pages/invoices/InvoiceDetailPage";
 import { CreateInvoicePage } from "./pages/invoices/CreateInvoicePage";
+import { EditInvoicePage } from "./pages/invoices/EditInvoicePage";
 import { PurchaseOrdersListPage } from "./pages/purchasing/PurchaseOrdersListPage";
 import { PurchaseOrderDetailPage } from "./pages/purchasing/PurchaseOrderDetailPage";
 import { CreatePurchaseOrderPage } from "./pages/purchasing/CreatePurchaseOrderPage";
@@ -161,6 +162,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <CreateInvoicePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/invoices/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditInvoicePage />
           </ProtectedRoute>
         }
       />

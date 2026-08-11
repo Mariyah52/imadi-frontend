@@ -8,6 +8,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { formatMoney } from "../../lib/format";
 import { RecordPaymentModal } from "./RecordPaymentModal";
+import { SendEmailModal } from "./SendEmailModal";
 import { InvoiceLetterhead, InvoiceBillTo, InvoicePaymentDetails } from "./InvoiceLetterhead";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -27,12 +28,14 @@ export function InvoiceDetailPage() {
 
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [customerName, setCustomerName] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string>("");
   const [billingAddress, setBillingAddress] = useState<Address | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [showEmail, setShowEmail] = useState(false);
   const [showCancelReason, setShowCancelReason] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
@@ -45,6 +48,7 @@ export function InvoiceDetailPage() {
       })
       .then(([customer, addresses]) => {
         setCustomerName(customer.company_name);
+        setCustomerEmail(customer.email ?? "");
         const billing = addresses.find((a) => a.address_type === "billing") ?? addresses[0] ?? null;
         setBillingAddress(billing);
       })
@@ -145,6 +149,11 @@ export function InvoiceDetailPage() {
       {actionError && <p className="mb-4 text-sm text-negative">{actionError}</p>}
 
       <div className="mb-6 flex flex-wrap gap-2 no-print">
+        {isDraft && canEdit && (
+          <Button variant="secondary" disabled={busy} onClick={() => navigate(`/invoices/${id}/edit`)}>
+            Edit
+          </Button>
+        )}
         {isDraft && canPost && (
           <Button disabled={busy} onClick={handlePost}>
             Post invoice
@@ -168,6 +177,11 @@ export function InvoiceDetailPage() {
         <Button variant="secondary" onClick={() => window.print()}>
           Print / Download PDF
         </Button>
+        {canEdit && (
+          <Button variant="secondary" disabled={busy} onClick={() => setShowEmail(true)}>
+            Send email
+          </Button>
+        )}
       </div>
 
       {showCancelReason && (
@@ -270,6 +284,15 @@ export function InvoiceDetailPage() {
             setShowPayment(false);
             load();
           }}
+        />
+      )}
+
+      {showEmail && (
+        <SendEmailModal
+          invoiceId={id}
+          defaultEmail={customerEmail}
+          onClose={() => setShowEmail(false)}
+          onSent={() => setShowEmail(false)}
         />
       )}
     </div>
