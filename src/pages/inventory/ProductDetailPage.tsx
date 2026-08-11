@@ -7,6 +7,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { formatMoney } from "../../lib/format";
 import { StockActionModal } from "./StockActionModal";
+import { EditProductModal } from "./EditProductModal";
 import { useAuth } from "../../auth/AuthContext";
 
 type ActionMode = "receive" | "issue" | "adjust" | null;
@@ -22,6 +23,7 @@ export function ProductDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionMode, setActionMode] = useState<ActionMode>(null);
+  const [showEdit, setShowEdit] = useState(false);
 
   function load() {
     if (!id) return;
@@ -55,11 +57,18 @@ export function ProductDetailPage() {
             {product.barcode && ` · ${product.barcode}`}
           </p>
         </div>
-        {product.is_low_stock && (
-          <span className="rounded-full bg-negative-bg px-2.5 py-1 text-xs font-medium text-negative">
-            Low stock
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {product.is_low_stock && (
+            <span className="rounded-full bg-negative-bg px-2.5 py-1 text-xs font-medium text-negative">
+              Low stock
+            </span>
+          )}
+          {canManage && (
+            <Button variant="secondary" onClick={() => setShowEdit(true)}>
+              Edit
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
@@ -160,6 +169,17 @@ export function ProductDetailPage() {
           onClose={() => setActionMode(null)}
           onDone={() => {
             setActionMode(null);
+            load();
+          }}
+        />
+      )}
+
+      {showEdit && (
+        <EditProductModal
+          product={product}
+          onClose={() => setShowEdit(false)}
+          onSaved={() => {
+            setShowEdit(false);
             load();
           }}
         />

@@ -40,6 +40,21 @@ export function createProduct(body: ProductCreateRequest) {
   return apiRequest<Product>("/inventory/products", { method: "POST", body });
 }
 
+export function updateProduct(
+  id: string,
+  body: Partial<{
+    name: string;
+    description: string;
+    category_id: string;
+    selling_price: string;
+    minimum_stock: string;
+    maximum_stock: string;
+    is_active: boolean;
+  }>,
+) {
+  return apiRequest<Product>(`/inventory/products/${id}`, { method: "PATCH", body });
+}
+
 export function createWarehouse(body: { code: string; name: string }) {
   return apiRequest<Warehouse>("/inventory/warehouses", { method: "POST", body });
 }
