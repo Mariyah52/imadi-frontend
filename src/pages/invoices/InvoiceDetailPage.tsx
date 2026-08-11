@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { cancelInvoice, duplicateInvoice, getInvoice, postInvoice } from "../../api/invoices";
+import { cancelInvoice, deleteInvoice, duplicateInvoice, getInvoice, postInvoice } from "../../api/invoices";
 import { getCustomerProfile, listAddresses } from "../../api/customers";
 import type { Address, Invoice } from "../../types/api";
 import { Card } from "../../components/ui/Card";
@@ -38,6 +38,7 @@ export function InvoiceDetailPage() {
   const [showEmail, setShowEmail] = useState(false);
   const [showCancelReason, setShowCancelReason] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   function load() {
     if (!id) return;
@@ -102,6 +103,19 @@ export function InvoiceDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!id) return;
+    setBusy(true);
+    setActionError(null);
+    try {
+      await deleteInvoice(id);
+      navigate("/invoices");
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Couldn't delete the invoice.");
+      setBusy(false);
+    }
+  }
+
   if (loading) return <p className="text-sm text-ink-muted">Loading…</p>;
   if (error) return <p className="text-sm text-negative">{error}</p>;
   if (!invoice || !id) return null;
@@ -154,6 +168,11 @@ export function InvoiceDetailPage() {
             Edit
           </Button>
         )}
+        {isDraft && canEdit && (
+          <Button variant="secondary" disabled={busy} onClick={() => setShowDeleteConfirm(true)}>
+            Delete
+          </Button>
+        )}
         {isDraft && canPost && (
           <Button disabled={busy} onClick={handlePost}>
             Post invoice
@@ -202,6 +221,23 @@ export function InvoiceDetailPage() {
           <Button disabled={busy || !cancelReason.trim()} onClick={handleCancel}>
             Confirm cancel
           </Button>
+        </Card>
+      )}
+
+      {showDeleteConfirm && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-3">
+            Delete draft invoice <span className="font-mono-data">{invoice.invoice_number}</span>{" "}
+            permanently? This cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button disabled={busy} onClick={handleDelete}>
+              Delete permanently
+            </Button>
+          </div>
         </Card>
       )}
 

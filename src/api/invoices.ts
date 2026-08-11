@@ -64,3 +64,7 @@ export function updateInvoice(
 ) {
   return apiRequest<Invoice>(`/invoices/${id}`, { method: "PATCH", body });
 }
+
+export function deleteInvoice(id: string) {
+  return apiRequest<void>(`/invoices/${id}`, { method: "DELETE" });
+}
