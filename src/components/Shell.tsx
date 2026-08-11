@@ -23,7 +23,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-bg">
       <div className="flex">
-        <aside className="fixed inset-y-0 left-0 w-60 border-r border-border bg-navy-900 text-white">
+        <aside className="fixed inset-y-0 left-0 w-60 border-r border-border bg-navy-900 text-white no-print">
           <div className="flex h-16 items-center gap-2 px-6">
             <div className="flex h-7 w-7 items-center justify-center rounded bg-amber-400 font-display text-sm font-bold text-navy-950">
               I
@@ -51,8 +51,10 @@ export function Shell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className="ml-60 flex-1">
-          <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-8">
-            <div className="font-mono-data text-xs text-ink-muted">FIN-01 / OPS-01</div>
+          <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-8 no-print">
+            <div className="font-mono-data text-xs text-ink-muted">
+              IMADI Fulfilment and Logistics Ltd
+            </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <div className="text-sm font-medium leading-tight">{user?.full_name}</div>

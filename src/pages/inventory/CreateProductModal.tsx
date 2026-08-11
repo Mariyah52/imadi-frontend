@@ -17,7 +17,10 @@ export function CreateProductModal({
   const [sku, setSku] = useState("");
   const [name, setName] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [costPrice, setCostPrice] = useState("0");
+  // Cost price isn't shown on this form — the backend still accepts it, so
+  // send a 0 default rather than requiring users to enter a figure they
+  // don't want tracked here.
+  const costPrice = "0";
   const [sellingPrice, setSellingPrice] = useState("0");
   const [minimumStock, setMinimumStock] = useState("0");
   const [error, setError] = useState<string | null>(null);
@@ -79,26 +82,15 @@ export function CreateProductModal({
               </select>
             </Field>
           )}
-          <div className="flex gap-2">
-            <Field label="Cost price">
-              <Input
-                type="number"
-                min={0}
-                step="0.01"
-                value={costPrice}
-                onChange={(e) => setCostPrice(e.target.value)}
-              />
-            </Field>
-            <Field label="Selling price">
-              <Input
-                type="number"
-                min={0}
-                step="0.01"
-                value={sellingPrice}
-                onChange={(e) => setSellingPrice(e.target.value)}
-              />
-            </Field>
-          </div>
+          <Field label="Selling price">
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              value={sellingPrice}
+              onChange={(e) => setSellingPrice(e.target.value)}
+            />
+          </Field>
           <Field label="Minimum stock (low-stock threshold)">
             <Input
               type="number"

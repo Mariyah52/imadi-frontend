@@ -19,7 +19,6 @@ export function CreateBankAccountModal({
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [sortCode, setSortCode] = useState("");
-  const [iban, setIban] = useState("");
   const [openingBalance, setOpeningBalance] = useState("0");
   const [openingBalanceDate, setOpeningBalanceDate] = useState(todayISO());
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +35,6 @@ export function CreateBankAccountModal({
         bank_name: bankName || undefined,
         account_number: accountNumber || undefined,
         sort_code: sortCode || undefined,
-        iban: iban || undefined,
         opening_balance: openingBalance,
         opening_balance_date: openingBalanceDate,
       });
@@ -79,9 +77,6 @@ export function CreateBankAccountModal({
                   <Input value={sortCode} onChange={(e) => setSortCode(e.target.value)} />
                 </Field>
               </div>
-              <Field label="IBAN">
-                <Input value={iban} onChange={(e) => setIban(e.target.value)} />
-              </Field>
             </>
           )}
           <div className="grid grid-cols-2 gap-3">

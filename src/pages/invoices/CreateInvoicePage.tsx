@@ -2,11 +2,12 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createInvoice } from "../../api/invoices";
 import { ApiError } from "../../api/client";
-import type { Customer, InvoiceItemCreateRequest } from "../../types/api";
+import type { Customer, InvoiceItemCreateRequest, Product } from "../../types/api";
 import { Button } from "../../components/ui/Button";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { CustomerPicker } from "./CustomerPicker";
+import { ProductLineInput } from "./ProductLineInput";
 import { todayISO } from "../../lib/format";
 
 function emptyItem(): InvoiceItemCreateRequest {
@@ -25,6 +26,14 @@ export function CreateInvoicePage() {
 
   function updateItem(index: number, patch: Partial<InvoiceItemCreateRequest>) {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
+  }
+
+  function selectProductForItem(index: number, product: Product) {
+    updateItem(index, {
+      description: `${product.sku} — ${product.name}`,
+      unit_price: product.selling_price,
+      product_id: product.id,
+    });
   }
 
   function removeItem(index: number) {
@@ -94,10 +103,10 @@ export function CreateInvoicePage() {
               <div key={i} className="grid grid-cols-12 gap-2 items-end border-b border-border pb-3 last:border-0">
                 <div className="col-span-5">
                   <Field label={i === 0 ? "Description" : ""}>
-                    <Input
-                      required
+                    <ProductLineInput
                       value={item.description}
-                      onChange={(e) => updateItem(i, { description: e.target.value })}
+                      onChange={(description) => updateItem(i, { description })}
+                      onSelectProduct={(product) => selectProductForItem(i, product)}
                     />
                   </Field>
                 </div>
@@ -162,7 +171,7 @@ export function CreateInvoicePage() {
         </Card>
 
         <Card className="p-5">
-          <Field label="Notes">
+          <Field label="Invoice period / notes (e.g. '18 Jul 26 Till 24 Jul 26')">
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
           </Field>
         </Card>

@@ -100,7 +100,6 @@ export function ProductsListPage() {
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-ink-muted">
                 <th className="px-5 py-3 font-medium">SKU</th>
                 <th className="px-5 py-3 font-medium">Name</th>
-                <th className="px-5 py-3 font-medium text-right">Cost</th>
                 <th className="px-5 py-3 font-medium text-right">Selling price</th>
                 <th className="px-5 py-3 font-medium">Status</th>
               </tr>
@@ -119,7 +118,6 @@ export function ProductsListPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-5 py-3 text-right font-mono-data">{formatMoney(p.cost_price)}</td>
                   <td className="px-5 py-3 text-right font-mono-data">
                     {formatMoney(p.selling_price)}
                   </td>

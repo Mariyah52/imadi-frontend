@@ -62,7 +62,7 @@ export function ProductDetailPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
         <Card className="p-5">
           <span className="text-sm text-ink-muted">On hand</span>
           <div className="mt-1 font-display text-xl font-semibold text-ink font-mono-data">
@@ -73,12 +73,6 @@ export function ProductDetailPage() {
           <span className="text-sm text-ink-muted">Minimum stock</span>
           <div className="mt-1 font-display text-xl font-semibold text-ink font-mono-data">
             {product.minimum_stock}
-          </div>
-        </Card>
-        <Card className="p-5">
-          <span className="text-sm text-ink-muted">Cost price</span>
-          <div className="mt-1 font-display text-xl font-semibold text-ink">
-            {formatMoney(product.cost_price)}
           </div>
         </Card>
         <Card className="p-5">
