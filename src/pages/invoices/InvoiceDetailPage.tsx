@@ -183,18 +183,6 @@ export function InvoiceDetailPage() {
         <Button variant="secondary" onClick={() => window.print()}>
           Print / Download PDF
         </Button>
-        <Button
-          variant="secondary"
-          onClick={() => {
-            const message = `Invoice ${invoice.invoice_number} from IMADI Fulfilment and Logistics Ltd — Total: ${formatMoney(
-              invoice.total,
-              invoice.currency,
-            )}, due ${invoice.due_date}.`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
-          }}
-        >
-          Send via WhatsApp
-        </Button>
         <Button variant="secondary" disabled={busy} onClick={handleEmail}>
           Send email
         </Button>
