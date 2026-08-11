@@ -6,6 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 import { Button } from "../components/ui/Button";
 import { Field, Input } from "../components/ui/Field";
 import { Card } from "../components/ui/Card";
+import { LOGO_DATA_URI } from "../assets/logo";
 
 export function LoginPage() {
   const { setSession } = useAuth();
@@ -72,13 +73,8 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-navy-950 px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex items-center justify-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded bg-amber-400 font-display text-lg font-bold text-navy-950">
-            I
-          </div>
-          <span className="font-display text-lg font-semibold text-white tracking-wide">
-            IMADI ERP
-          </span>
+        <div className="mb-8 flex items-center justify-center">
+          <img src={LOGO_DATA_URI} alt="IMADI Fulfilment & Logistics" className="h-12" />
         </div>
 
         <Card className="p-8">

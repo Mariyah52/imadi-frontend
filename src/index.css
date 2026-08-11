@@ -15,11 +15,11 @@
   --color-navy-100: #e4e9f2;
   --color-navy-50: #f4f6fa;
 
-  /* Signature accent */
-  --color-amber-600: #b6790f;
-  --color-amber-500: #d99a1f;
-  --color-amber-400: #f0b429;
-  --color-amber-100: #fbeacb;
+  /* Signature accent — matched to the real IMADI logo orange (#F15C28) */
+  --color-amber-600: #c8481c;
+  --color-amber-500: #f15c28;
+  --color-amber-400: #f47c4f;
+  --color-amber-100: #fce4d9;
 
   /* Financial movement */
   --color-positive: #1e8a5f;

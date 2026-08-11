@@ -1,4 +1,5 @@
 import type { Address } from "../../types/api";
+import { LOGO_DATA_URI } from "../../assets/logo";
 
 // Single-tenant app — this ERP only ever serves one company, so these are
 // fixed rather than pulled from a settings screen. Update here if any of
@@ -19,7 +20,9 @@ const BANK_DETAILS = {
 export function InvoiceLetterhead() {
   return (
     <div className="mb-6">
-      <h2 className="font-display text-lg font-bold text-ink">{COMPANY.name}</h2>
+      <img src={LOGO_DATA_URI} alt="IMADI Fulfilment & Logistics" className="h-14 mb-3" />
+      <div className="h-1 w-full bg-amber-500 rounded-full mb-3" />
+      <p className="text-sm font-semibold text-ink">{COMPANY.name}</p>
       <p className="text-sm text-ink-muted">{COMPANY.addressLine}</p>
       <p className="text-sm text-ink-muted">{COMPANY.email}</p>
       <p className="text-sm text-ink-muted">VAT Registration No.: {COMPANY.vatNumber}</p>

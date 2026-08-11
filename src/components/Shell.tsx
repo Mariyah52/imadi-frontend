@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { Button } from "./ui/Button";
+import { LOGO_DATA_URI } from "../assets/logo";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", end: true },
@@ -24,11 +25,8 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-bg">
       <div className="flex">
         <aside className="fixed inset-y-0 left-0 w-60 border-r border-border bg-navy-900 text-white no-print">
-          <div className="flex h-16 items-center gap-2 px-6">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-amber-400 font-display text-sm font-bold text-navy-950">
-              I
-            </div>
-            <span className="font-display text-sm font-semibold tracking-wide">IMADI ERP</span>
+          <div className="flex h-16 items-center gap-2 px-6 bg-white">
+            <img src={LOGO_DATA_URI} alt="IMADI Fulfilment & Logistics" className="h-9" />
           </div>
           <nav className="mt-4 flex flex-col gap-1 px-3">
             {NAV_ITEMS.map((item) => (
