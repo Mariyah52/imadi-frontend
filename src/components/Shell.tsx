@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { to: "/vat", label: "VAT", end: false },
   { to: "/reports", label: "Reports", end: false },
   { to: "/accounting", label: "Accounting", end: false },
-  { to: "/banking", label: "Banking", end: false },
   { to: "/logistics", label: "Logistics", end: false },
   { to: "/ai", label: "AI tools", end: false },
   { to: "/security", label: "Admin", end: false },

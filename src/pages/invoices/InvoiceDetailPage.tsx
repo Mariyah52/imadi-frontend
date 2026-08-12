@@ -241,7 +241,7 @@ export function InvoiceDetailPage() {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
         <Card className="p-5">
           <span className="text-sm text-ink-muted">Subtotal</span>
           <div className="mt-1 font-display text-lg font-semibold">
@@ -258,12 +258,6 @@ export function InvoiceDetailPage() {
           <span className="text-sm text-ink-muted">Total</span>
           <div className="mt-1 font-display text-lg font-semibold">
             {formatMoney(invoice.total, invoice.currency)}
-          </div>
-        </Card>
-        <Card className="p-5">
-          <span className="text-sm text-ink-muted">Balance</span>
-          <div className="mt-1 font-display text-lg font-semibold text-negative">
-            {formatMoney(invoice.balance, invoice.currency)}
           </div>
         </Card>
       </div>

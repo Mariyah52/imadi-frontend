@@ -94,7 +94,6 @@ export function InvoicesListPage() {
                 <th className="px-5 py-3 font-medium">Issued</th>
                 <th className="px-5 py-3 font-medium">Due</th>
                 <th className="px-5 py-3 font-medium text-right">Total</th>
-                <th className="px-5 py-3 font-medium text-right">Balance</th>
               </tr>
             </thead>
             <tbody>
@@ -117,7 +116,6 @@ export function InvoicesListPage() {
                   <td className="px-5 py-3 text-ink-muted">{inv.issue_date}</td>
                   <td className="px-5 py-3 text-ink-muted">{inv.due_date}</td>
                   <td className="px-5 py-3 text-right font-mono-data">{formatMoney(inv.total)}</td>
-                  <td className="px-5 py-3 text-right font-mono-data">{formatMoney(inv.balance)}</td>
                 </tr>
               ))}
             </tbody>
