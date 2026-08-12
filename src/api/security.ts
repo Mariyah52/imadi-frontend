@@ -1,4 +1,4 @@
-import { apiRequest } from "./client";
+import { apiRequest, downloadFile } from "./client";
 import type {
   Backup,
   PaginatedAuditLogs,
@@ -95,6 +95,10 @@ export function getBackup(id: string) {
 
 export function createBackup() {
   return apiRequest<Backup>("/security/backups", { method: "POST" });
+}
+
+export function downloadBackup(id: string, fileName: string) {
+  return downloadFile(`/security/backups/${id}/download`, fileName);
 }
 
 export function restoreBackup(id: string, body: RestoreRequest) {

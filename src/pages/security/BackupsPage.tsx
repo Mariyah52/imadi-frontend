@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { createBackup, listBackups } from "../../api/security";
+import { createBackup, downloadBackup, listBackups } from "../../api/security";
 import type { Backup, RestoreResult } from "../../types/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -30,6 +30,7 @@ export function BackupsPage() {
   const [creating, setCreating] = useState(false);
   const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
   const [lastRestore, setLastRestore] = useState<RestoreResult | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
@@ -51,6 +52,18 @@ export function BackupsPage() {
       setError(err instanceof ApiError ? err.message : "Couldn't create a backup.");
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function handleDownload(backup: Backup) {
+    setDownloadingId(backup.id);
+    setError(null);
+    try {
+      await downloadBackup(backup.id, backup.file_name);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't download this backup.");
+    } finally {
+      setDownloadingId(null);
     }
   }
 
@@ -117,14 +130,25 @@ export function BackupsPage() {
                     )}
                   </td>
                   <td className="px-5 py-3">
-                    {canManage && b.status === "completed" && (
-                      <button
-                        onClick={() => setRestoreTarget(b.id)}
-                        className="text-xs text-navy-800 hover:underline"
-                      >
-                        Restore
-                      </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                      {b.status === "completed" && (
+                        <button
+                          onClick={() => handleDownload(b)}
+                          disabled={downloadingId === b.id}
+                          className="text-xs text-navy-800 hover:underline disabled:opacity-50"
+                        >
+                          {downloadingId === b.id ? "Downloading…" : "Download"}
+                        </button>
+                      )}
+                      {canManage && b.status === "completed" && (
+                        <button
+                          onClick={() => setRestoreTarget(b.id)}
+                          className="text-xs text-navy-800 hover:underline"
+                        >
+                          Restore
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

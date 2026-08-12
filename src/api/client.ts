@@ -158,4 +158,48 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
   return res.json() as Promise<T>;
 }
 
+/**
+ * For endpoints that return a raw file (e.g. backup downloads) rather than
+ * JSON. Triggers a real browser download using the given filename.
+ */
+export async function downloadFile(path: string, fileName: string): Promise<void> {
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
+  const headers: Record<string, string> = {};
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+  let res = await fetch(url.toString(), { headers, credentials: "include" });
+
+  if (res.status === 401) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      headers["Authorization"] = `Bearer ${refreshed}`;
+      res = await fetch(url.toString(), { headers, credentials: "include" });
+    }
+  }
+
+  if (!res.ok) {
+    let errBody: ApiErrorBody | null = null;
+    try {
+      errBody = await res.json();
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new ApiError(
+      res.status,
+      errBody?.error?.code ?? "unknown_error",
+      errBody?.error?.message ?? `Download failed with status ${res.status}`,
+    );
+  }
+
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
 export { refreshAccessToken };
