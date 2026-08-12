@@ -28,13 +28,18 @@ export function LoginPage() {
       if (isTwoFactorRequired(result)) {
         setTwoFactorToken(result.two_factor_token);
       } else {
-        setSession(result.access_token, {
-          id: result.user_id,
-          email: result.email,
-          full_name: result.full_name,
-          permissions: result.permissions,
-          mfa_enabled: false,
-        });
+        const withRefresh = result as typeof result & { refresh_token?: string };
+        setSession(
+          result.access_token,
+          {
+            id: result.user_id,
+            email: result.email,
+            full_name: result.full_name,
+            permissions: result.permissions,
+            mfa_enabled: false,
+          },
+          withRefresh.refresh_token,
+        );
         navigate("/", { replace: true });
       }
     } catch (err) {
@@ -51,15 +56,20 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       const result = await loginTwoFactor(twoFactorToken, totpCode);
+      const withRefresh = result as typeof result & { refresh_token?: string };
       // Set the token first so the authenticated /auth/me call below can
       // use it, then hydrate the full user record from that endpoint.
-      setSession(result.access_token, {
-        id: result.user_id,
-        email: result.email,
-        full_name: result.full_name,
-        permissions: result.permissions,
-        mfa_enabled: true,
-      });
+      setSession(
+        result.access_token,
+        {
+          id: result.user_id,
+          email: result.email,
+          full_name: result.full_name,
+          permissions: result.permissions,
+          mfa_enabled: true,
+        },
+        withRefresh.refresh_token,
+      );
       const me = await getMe();
       setSession(result.access_token, me);
       navigate("/", { replace: true });

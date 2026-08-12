@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { getMe, logout as apiLogout } from "../api/auth";
-import { refreshAccessToken, setAccessToken } from "../api/client";
+import { getRefreshToken, refreshAccessToken, setAccessToken, setRefreshToken } from "../api/client";
 import type { CurrentUserResponse } from "../types/api";
 
 interface AuthContextValue {
   user: CurrentUserResponse | null;
   status: "loading" | "authenticated" | "unauthenticated";
   hasPermission: (perm: string) => boolean;
-  setSession: (token: string, user: CurrentUserResponse) => void;
+  setSession: (token: string, user: CurrentUserResponse, refreshToken?: string) => void;
   signOut: () => Promise<void>;
 }
 
@@ -18,8 +18,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<"loading" | "authenticated" | "unauthenticated">("loading");
 
   // On boot, there's no access token in memory (page was reloaded), but a
-  // valid session may still exist via the HttpOnly refresh cookie — try
-  // silently restoring it before falling back to the login screen.
+  // valid session may still exist — stored in this tab's sessionStorage —
+  // try silently restoring it before falling back to the login screen.
   useEffect(() => {
     (async () => {
       const token = await refreshAccessToken();
@@ -38,19 +38,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })();
   }, []);
 
-  function setSession(token: string, u: CurrentUserResponse) {
+  function setSession(token: string, u: CurrentUserResponse, refreshToken?: string) {
     setAccessToken(token);
+    if (refreshToken) setRefreshToken(refreshToken);
     setUser(u);
     setStatus("authenticated");
   }
 
   async function signOut() {
     try {
-      await apiLogout();
+      await apiLogout(getRefreshToken() ?? undefined);
     } catch {
       /* best-effort — clear local state regardless */
     }
     setAccessToken(null);
+    setRefreshToken(null);
     setUser(null);
     setStatus("unauthenticated");
   }

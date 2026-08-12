@@ -15,8 +15,8 @@ export function loginTwoFactor(two_factor_token: string, totp_code: string) {
   );
 }
 
-export function logout() {
-  return apiRequest<void>("/auth/logout", { method: "POST", body: {} });
+export function logout(refresh_token?: string) {
+  return apiRequest<void>("/auth/logout", { method: "POST", body: { refresh_token } });
 }
 
 export function getMe() {

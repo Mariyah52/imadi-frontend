@@ -1,12 +1,27 @@
 import type { ApiErrorBody } from "../types/api";
 
+// In dev, this stays "/api/v1" and Vite's proxy (vite.config.ts) forwards it
+// to the local backend. In a real deployment, set VITE_API_BASE_URL (e.g. to
+// https://imadi-customerp.onrender.com/api/v1) at build time, since a
+// deployed static site has no dev proxy to rely on.
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const CSRF_COOKIE_NAME = "csrf_token";
 const CSRF_HEADER_NAME = "X-CSRF-Token";
+const REFRESH_TOKEN_KEY = "imadi_refresh_token";
 
-// Access token lives in memory only — never localStorage/sessionStorage.
-// It's lost on a hard page refresh by design; refreshAccessToken() below
-// re-derives it from the HttpOnly refresh cookie on app boot.
+// Access token lives in memory only — never persisted. It's lost on a hard
+// page refresh by design; refreshAccessToken() below re-derives it.
+//
+// The refresh token, however, is stored in sessionStorage (per browser tab,
+// cleared when the tab closes). This is a deliberate change from relying on
+// the HttpOnly refresh cookie: the frontend and backend live on two
+// different domains, and browsers increasingly block that cross-site cookie
+// outright — which broke "stay signed in" on reload, and also meant two
+// people logging in on the same browser (different tabs) stomped on each
+// other's shared cookie. sessionStorage is genuinely separate per tab, so
+// neither problem happens here. The tradeoff: the refresh token is now
+// readable by any JS on the page rather than HttpOnly-protected, which is
+// the standard tradeoff most web apps make for this pattern.
 let accessToken: string | null = null;
 let refreshInFlight: Promise<string | null> | null = null;
 
@@ -16,6 +31,18 @@ export function setAccessToken(token: string | null) {
 
 export function getAccessToken() {
   return accessToken;
+}
+
+export function setRefreshToken(token: string | null) {
+  if (token) {
+    sessionStorage.setItem(REFRESH_TOKEN_KEY, token);
+  } else {
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+  }
+}
+
+export function getRefreshToken(): string | null {
+  return sessionStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
 function readCookie(name: string): string | null {
@@ -38,21 +65,27 @@ async function refreshAccessToken(): Promise<string | null> {
 
   refreshInFlight = (async () => {
     try {
+      const storedRefresh = getRefreshToken();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      // Only ride the cookie/CSRF pair as a fallback when we have no stored
+      // token of our own (e.g. an older session from before this change).
+      if (!storedRefresh) {
+        headers[CSRF_HEADER_NAME] = readCookie(CSRF_COOKIE_NAME) ?? "";
+      }
       const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          [CSRF_HEADER_NAME]: readCookie(CSRF_COOKIE_NAME) ?? "",
-        },
-        body: JSON.stringify({}),
+        headers,
+        body: JSON.stringify(storedRefresh ? { refresh_token: storedRefresh } : {}),
       });
       if (!res.ok) {
         setAccessToken(null);
+        setRefreshToken(null);
         return null;
       }
       const data = await res.json();
       setAccessToken(data.access_token);
+      if (data.refresh_token) setRefreshToken(data.refresh_token);
       return data.access_token as string;
     } catch {
       setAccessToken(null);
