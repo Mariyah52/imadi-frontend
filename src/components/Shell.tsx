@@ -48,7 +48,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </nav>
         </aside>
 
-        <div className="ml-60 flex-1">
+        <div className="ml-60 flex-1 print:ml-0">
           <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-8 no-print">
             <div className="font-mono-data text-xs text-ink-muted">
               IMADI Fulfilment and Logistics Ltd
