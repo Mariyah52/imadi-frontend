@@ -19,6 +19,7 @@ export function CreateInvoicePage() {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [issueDate, setIssueDate] = useState(todayISO());
   const [dueDate, setDueDate] = useState(new Date(Date.now() + 7*24*60*60*1000).toISOString().slice(0,10));
+  const [currency, setCurrency] = useState("GBP");
   const [items, setItems] = useState<InvoiceItemCreateRequest[]>([emptyItem()]);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +61,7 @@ export function CreateInvoicePage() {
         customer_id: customer.id,
         issue_date: issueDate,
         due_date: dueDate,
+        currency,
         items,
         notes: notes || undefined,
       });
@@ -77,7 +79,7 @@ export function CreateInvoicePage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="p-5">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <Field label="Customer">
               <CustomerPicker value={customer} onChange={setCustomer} />
             </Field>
@@ -86,6 +88,17 @@ export function CreateInvoicePage() {
             </Field>
             <Field label="Due date">
               <Input type="date" required value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            </Field>
+            <Field label="Currency">
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm"
+              >
+                <option value="GBP">GBP — British Pound</option>
+                <option value="USD">USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+              </select>
             </Field>
           </div>
         </Card>

@@ -263,7 +263,7 @@ export function InvoiceDetailPage() {
       </div>
 
       <Card>
-        <h2 className="px-5 pt-5 text-sm font-medium text-ink-muted mb-3">Line items</h2>
+        <div className="px-5 pt-5"></div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-ink-muted">
@@ -300,7 +300,7 @@ export function InvoiceDetailPage() {
         )}
       </Card>
 
-      <Card className="p-5 mt-6">
+      <Card className="p-5 mt-6 break-inside-avoid">
         <InvoicePaymentDetails invoiceNumber={invoice.invoice_number} />
       </Card>
       </div>

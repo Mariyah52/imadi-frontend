@@ -7,6 +7,7 @@ import { LOGO_DATA_URI } from "../assets/logo";
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/customers", label: "Customers", end: false },
+  { to: "/suppliers", label: "Suppliers", end: false },
   { to: "/inventory", label: "Inventory", end: false },
   { to: "/invoices", label: "Invoices", end: false },
   { to: "/purchasing/orders", label: "Purchase orders", end: false },
