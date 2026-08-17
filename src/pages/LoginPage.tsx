@@ -14,6 +14,7 @@ export function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [totpCode, setTotpCode] = useState("");
   const [twoFactorToken, setTwoFactorToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -101,13 +102,23 @@ export function LoginPage() {
                 />
               </Field>
               <Field label="Password">
-                <Input
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-16"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-muted hover:text-ink"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
               </Field>
               {error && <p className="text-sm text-negative">{error}</p>}
               <Button type="submit" disabled={submitting} className="mt-2 w-full">
