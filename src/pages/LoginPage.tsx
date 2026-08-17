@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getMe, isTwoFactorRequired, login, loginTwoFactor } from "../api/auth";
 import { ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -124,6 +124,9 @@ export function LoginPage() {
               <Button type="submit" disabled={submitting} className="mt-2 w-full">
                 {submitting ? "Signing in…" : "Sign in"}
               </Button>
+              <Link to="/signup" className="text-center text-sm text-navy-800 hover:underline">
+                First time setting up? Create owner account
+              </Link>
             </form>
           ) : (
             <form onSubmit={handleTwoFactorSubmit} className="flex flex-col gap-4">

@@ -15,6 +15,18 @@ export function loginTwoFactor(two_factor_token: string, totp_code: string) {
   );
 }
 
+export function registerOwner(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+) {
+  return apiRequest<{ created: boolean; email: string }>("/auth/register-owner", {
+    method: "POST",
+    body: { email, password, first_name: firstName, last_name: lastName },
+  });
+}
+
 export function logout(refresh_token?: string) {
   return apiRequest<void>("/auth/logout", { method: "POST", body: { refresh_token } });
 }
