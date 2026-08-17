@@ -202,4 +202,45 @@ export async function downloadFile(path: string, fileName: string): Promise<void
   URL.revokeObjectURL(objectUrl);
 }
 
+/**
+ * For endpoints that accept multipart/form-data (file uploads) rather than
+ * JSON, like restoring from an uploaded backup file.
+ */
+export async function uploadFormData<T>(path: string, formData: FormData): Promise<T> {
+  const url = new URL(`${API_BASE}${path}`, window.location.origin);
+  const headers: Record<string, string> = {};
+  if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+  let res = await fetch(url.toString(), {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: formData,
+  });
+
+  if (res.status === 401) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      headers["Authorization"] = `Bearer ${refreshed}`;
+      res = await fetch(url.toString(), { method: "POST", headers, credentials: "include", body: formData });
+    }
+  }
+
+  if (!res.ok) {
+    let errBody: ApiErrorBody | null = null;
+    try {
+      errBody = await res.json();
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new ApiError(
+      res.status,
+      errBody?.error?.code ?? "unknown_error",
+      errBody?.error?.message ?? `Upload failed with status ${res.status}`,
+    );
+  }
+
+  return res.json() as Promise<T>;
+}
+
 export { refreshAccessToken };

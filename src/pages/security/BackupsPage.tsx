@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { createBackup, downloadBackup, listBackups } from "../../api/security";
-import type { Backup, RestoreResult } from "../../types/api";
+import { createBackup, downloadBackup, listBackups, restoreFromUploadedFile } from "../../api/security";
+import type { Backup } from "../../types/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { RestoreBackupModal } from "./RestoreBackupModal";
@@ -29,8 +29,14 @@ export function BackupsPage() {
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [restoreTarget, setRestoreTarget] = useState<string | null>(null);
-  const [lastRestore, setLastRestore] = useState<RestoreResult | null>(null);
+  const [lastRestore, setLastRestore] = useState<{
+    restored_into: string;
+    restored_in_place: boolean;
+  } | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadConfirm, setUploadConfirm] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   function load() {
     setLoading(true);
@@ -67,6 +73,22 @@ export function BackupsPage() {
     }
   }
 
+  async function handleUploadRestore() {
+    if (!uploadFile) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const result = await restoreFromUploadedFile(uploadFile);
+      setLastRestore(result);
+      setUploadFile(null);
+      setUploadConfirm(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't restore from this file.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <div>
       <Link to="/security" className="text-sm text-navy-800 hover:underline">
@@ -76,13 +98,46 @@ export function BackupsPage() {
       <div className="mt-3 mb-6 flex items-center justify-between">
         <h1 className="font-display text-xl font-semibold text-ink">Backups</h1>
         {canManage && (
-          <Button disabled={creating} onClick={handleCreate}>
-            {creating ? "Creating…" : "Create backup now"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <label className="cursor-pointer rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-ink hover:bg-navy-50">
+              {uploadFile ? uploadFile.name : "Choose backup file…"}
+              <input
+                type="file"
+                accept=".dump"
+                className="hidden"
+                onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            {uploadFile && (
+              <Button variant="secondary" onClick={() => setUploadConfirm(true)}>
+                Restore from file
+              </Button>
+            )}
+            <Button disabled={creating} onClick={handleCreate}>
+              {creating ? "Creating…" : "Create backup now"}
+            </Button>
+          </div>
         )}
       </div>
 
       {error && <p className="mb-4 text-sm text-negative">{error}</p>}
+
+      {uploadConfirm && uploadFile && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-3">
+            Restore from <span className="font-mono-data">{uploadFile.name}</span>? By default
+            this restores into a fresh scratch database — it will NOT overwrite your live data.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setUploadConfirm(false)} disabled={uploading}>
+              Cancel
+            </Button>
+            <Button disabled={uploading} onClick={handleUploadRestore}>
+              {uploading ? "Restoring…" : "Confirm restore"}
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {lastRestore && (
         <Card className="p-4 mb-6 bg-positive-bg">

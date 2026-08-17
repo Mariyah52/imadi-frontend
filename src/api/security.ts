@@ -1,4 +1,4 @@
-import { apiRequest, downloadFile } from "./client";
+import { apiRequest, downloadFile, uploadFormData } from "./client";
 import type {
   Backup,
   PaginatedAuditLogs,
@@ -103,4 +103,15 @@ export function downloadBackup(id: string, fileName: string) {
 
 export function restoreBackup(id: string, body: RestoreRequest) {
   return apiRequest<RestoreResult>(`/security/backups/${id}/restore`, { method: "POST", body });
+}
+
+export function restoreFromUploadedFile(file: File, targetDbname?: string) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("confirm", "true");
+  if (targetDbname) formData.append("target_dbname", targetDbname);
+  return uploadFormData<{ restored_into: string; restored_in_place: boolean }>(
+    "/security/backups/restore-upload",
+    formData,
+  );
 }
