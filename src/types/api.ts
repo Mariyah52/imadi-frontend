@@ -68,7 +68,6 @@ export interface CustomerCreateRequest {
   vat_number?: string;
   payment_terms_days?: number;
   credit_limit?: string;
-  charges_vat?: boolean;
   currency?: string;
   charges_vat?: boolean;
 }
