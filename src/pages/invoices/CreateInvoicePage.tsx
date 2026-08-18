@@ -10,8 +10,14 @@ import { CustomerPicker } from "./CustomerPicker";
 import { ProductLineInput } from "./ProductLineInput";
 import { todayISO } from "../../lib/format";
 
-function emptyItem(): InvoiceItemCreateRequest {
-  return { description: "", quantity: "1", unit_price: "0", discount_percent: "0", vat_treatment: "standard" };
+function emptyItem(chargesVat: boolean): InvoiceItemCreateRequest {
+  return {
+    description: "",
+    quantity: "1",
+    unit_price: "0",
+    discount_percent: "0",
+    vat_treatment: chargesVat ? "standard" : "zero",
+  };
 }
 
 export function CreateInvoicePage() {
@@ -20,13 +26,22 @@ export function CreateInvoicePage() {
   const [issueDate, setIssueDate] = useState(todayISO());
   const [dueDate, setDueDate] = useState(new Date(Date.now() + 7*24*60*60*1000).toISOString().slice(0,10));
   const [currency, setCurrency] = useState("GBP");
-  const [items, setItems] = useState<InvoiceItemCreateRequest[]>([emptyItem()]);
+  const [items, setItems] = useState<InvoiceItemCreateRequest[]>([emptyItem(true)]);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function updateItem(index: number, patch: Partial<InvoiceItemCreateRequest>) {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
+  }
+
+  function handleCustomerChange(next: Customer | null) {
+    setCustomer(next);
+    // Default every line's VAT treatment to match the customer's VAT status —
+    // "standard" if they're charged VAT, "zero" if not. Still editable per
+    // line afterwards if a specific item needs to differ.
+    const vatTreatment = next && !next.charges_vat ? "zero" : "standard";
+    setItems((prev) => prev.map((it) => ({ ...it, vat_treatment: vatTreatment })));
   }
 
   function selectProductForItem(index: number, product: Product) {
@@ -81,7 +96,12 @@ export function CreateInvoicePage() {
         <Card className="p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <Field label="Customer">
-              <CustomerPicker value={customer} onChange={setCustomer} />
+              <CustomerPicker value={customer} onChange={handleCustomerChange} />
+              {customer && (
+                <p className="mt-1 text-xs text-ink-muted">
+                  {customer.charges_vat ? "VAT registered — VAT will be charged" : "Not VAT registered — no VAT charged"}
+                </p>
+              )}
             </Field>
             <Field label="Issue date">
               <Input type="date" required value={issueDate} onChange={(e) => setIssueDate(e.target.value)} />
@@ -106,7 +126,11 @@ export function CreateInvoicePage() {
         <Card className="p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-medium text-ink-muted">Line items</h2>
-            <Button type="button" variant="ghost" onClick={() => setItems((prev) => [...prev, emptyItem()])}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setItems((prev) => [...prev, emptyItem(customer?.charges_vat ?? true)])}
+            >
               Add line
             </Button>
           </div>

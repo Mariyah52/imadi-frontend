@@ -20,6 +20,7 @@ export function CreateCustomerModal({
   const [line2, setLine2] = useState("");
   const [city, setCity] = useState("");
   const [postcode, setPostcode] = useState("");
+  const [chargesVat, setChargesVat] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -33,6 +34,7 @@ export function CreateCustomerModal({
         company_name: companyName,
         email: email || undefined,
         phone: phone || undefined,
+        charges_vat: chargesVat,
       });
       if (line1.trim() && city.trim() && postcode.trim()) {
         await addAddress(customer.id, {
@@ -70,6 +72,15 @@ export function CreateCustomerModal({
           <Field label="Phone">
             <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
           </Field>
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={chargesVat}
+              onChange={(e) => setChargesVat(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            VAT registered (charge VAT on this customer's invoices)
+          </label>
           <div className="border-t border-border pt-4 mt-1">
             <p className="text-xs text-ink-muted mb-3">
               Address (optional — leave blank to add later from the customer's page)

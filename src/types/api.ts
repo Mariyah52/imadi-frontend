@@ -41,6 +41,7 @@ export interface Customer {
   payment_terms_days: number;
   credit_limit: string; // Decimal serializes as string
   currency: string;
+  charges_vat: boolean;
   is_active: boolean;
   created_at: string;
 }
@@ -67,7 +68,9 @@ export interface CustomerCreateRequest {
   vat_number?: string;
   payment_terms_days?: number;
   credit_limit?: string;
+  charges_vat?: boolean;
   currency?: string;
+  charges_vat?: boolean;
 }
 
 export interface CustomerInvoice {
@@ -136,6 +139,7 @@ export interface CustomerUpdateRequest {
   vat_number?: string;
   payment_terms_days?: number;
   is_active?: boolean;
+  charges_vat?: boolean;
 }
 
 // --- Suppliers ---
@@ -176,6 +180,7 @@ export interface SupplierCreateRequest {
   vat_number?: string;
   payment_terms_days?: number;
   currency?: string;
+  charges_vat?: boolean;
   bank_account_iban?: string;
   bank_sort_code?: string;
 }
@@ -188,6 +193,7 @@ export interface SupplierUpdateRequest {
   vat_number?: string;
   payment_terms_days?: number;
   bank_account_iban?: string;
+  charges_vat?: boolean;
   bank_sort_code?: string;
   is_active?: boolean;
 }

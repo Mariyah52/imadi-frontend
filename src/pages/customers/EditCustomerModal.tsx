@@ -20,6 +20,7 @@ export function EditCustomerModal({
   const [phone, setPhone] = useState(customer.phone ?? "");
   const [vatNumber, setVatNumber] = useState(customer.vat_number ?? "");
   const [paymentTermsDays, setPaymentTermsDays] = useState(String(customer.payment_terms_days));
+  const [chargesVat, setChargesVat] = useState(customer.charges_vat);
   const [isActive, setIsActive] = useState(customer.is_active);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -35,6 +36,7 @@ export function EditCustomerModal({
         phone: phone || undefined,
         vat_number: vatNumber || undefined,
         payment_terms_days: Number(paymentTermsDays),
+        charges_vat: chargesVat,
         is_active: isActive,
       });
       onSaved();
@@ -71,6 +73,15 @@ export function EditCustomerModal({
               onChange={(e) => setPaymentTermsDays(e.target.value)}
             />
           </Field>
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <input
+              type="checkbox"
+              checked={chargesVat}
+              onChange={(e) => setChargesVat(e.target.checked)}
+              className="h-4 w-4 rounded border-border"
+            />
+            VAT registered (charge VAT on this customer's invoices)
+          </label>
           <label className="flex items-center gap-2 text-sm text-ink">
             <input
               type="checkbox"
