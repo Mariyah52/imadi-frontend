@@ -36,6 +36,7 @@ export function BackupsPage() {
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadConfirm, setUploadConfirm] = useState(false);
+  const [uploadTargetDb, setUploadTargetDb] = useState("");
   const [uploading, setUploading] = useState(false);
 
   function load() {
@@ -78,10 +79,11 @@ export function BackupsPage() {
     setUploading(true);
     setError(null);
     try {
-      const result = await restoreFromUploadedFile(uploadFile);
+      const result = await restoreFromUploadedFile(uploadFile, uploadTargetDb.trim() || undefined);
       setLastRestore(result);
       setUploadFile(null);
       setUploadConfirm(false);
+      setUploadTargetDb("");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't restore from this file.");
     } finally {
@@ -125,9 +127,28 @@ export function BackupsPage() {
       {uploadConfirm && uploadFile && (
         <Card className="p-4 mb-6">
           <p className="text-sm text-ink mb-3">
-            Restore from <span className="font-mono-data">{uploadFile.name}</span>? By default
-            this restores into a fresh scratch database — it will NOT overwrite your live data.
+            Restore from <span className="font-mono-data">{uploadFile.name}</span>?
           </p>
+          <label className="mb-3 block text-sm font-medium text-ink-muted">
+            Target database (optional — leave blank for a safe scratch restore)
+          </label>
+          <input
+            className="mb-3 w-full rounded-md border border-border bg-white px-3 py-2 text-sm"
+            value={uploadTargetDb}
+            onChange={(e) => setUploadTargetDb(e.target.value)}
+            placeholder="Leave blank to restore into a fresh scratch database"
+          />
+          {uploadTargetDb.trim() ? (
+            <p className="mb-3 text-sm text-negative font-medium">
+              This will overwrite all data in "{uploadTargetDb.trim()}", including login
+              accounts. This cannot be undone.
+            </p>
+          ) : (
+            <p className="mb-3 text-xs text-ink-muted">
+              By default this restores into a fresh scratch database — it will NOT overwrite
+              your live data.
+            </p>
+          )}
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setUploadConfirm(false)} disabled={uploading}>
               Cancel
