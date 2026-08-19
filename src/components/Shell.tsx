@@ -27,7 +27,7 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-bg">
       <div className="flex">
-        <aside className="fixed inset-y-0 left-0 w-60 border-r border-border bg-navy-900 text-white no-print">
+        <aside className="fixed inset-y-0 left-0 w-60 border-r border-border bg-navy-900 text-white no-print overflow-y-auto">
           <div className="flex h-16 items-center gap-2 px-6 bg-white">
             <img src={LOGO_DATA_URI} alt="IMADI Fulfilment & Logistics" className="h-9" />
           </div>
