@@ -44,7 +44,7 @@ export function RestoreBackupModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/40 px-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4">
       <Card className="w-full max-w-md p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-2">Restore backup</h2>
         <p className="mb-4 text-sm text-ink-muted">

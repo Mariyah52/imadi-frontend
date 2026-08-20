@@ -48,7 +48,7 @@ export function EditCustomerModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/40 px-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4">
       <Card className="w-full max-w-md p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">Edit customer</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
