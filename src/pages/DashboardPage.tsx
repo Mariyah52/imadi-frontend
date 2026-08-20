@@ -59,7 +59,7 @@ export function DashboardPage() {
 
       {!loading && !error && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <KpiCard label="Revenue (net)" code="FIN-01" value={sales ? formatMoney(sales.total_sales) : "—"} />
+          <KpiCard label="Revenue (net)" code="FIN-01" value={sales ? formatMoney(sales.total_net) : "—"} />
           <KpiCard
             label="Net income"
             code="FIN-02"

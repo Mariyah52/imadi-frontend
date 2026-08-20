@@ -35,10 +35,14 @@ export interface AgingReport {
 }
 
 export interface SalesReport {
-  by_customer: { customer_id: string; invoice_count: number; net: string; vat: string }[];
-  by_day: Record<string, string>;
-  total_sales: string;
+  period_start: string;
+  period_end: string;
+  invoice_count: number;
+  total_net: string;
   total_vat: string;
+  total_gross: string;
+  by_customer: { customer_id: string; customer_name: string; invoice_count: number; net: string; vat: string; gross: string }[];
+  by_day: { date: string; net: string }[];
 }
 
 export interface PurchaseReport {
