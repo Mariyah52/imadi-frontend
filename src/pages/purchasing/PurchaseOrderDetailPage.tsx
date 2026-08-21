@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import {
   approvePurchaseOrder,
+  deletePurchaseOrder,
   getPurchaseOrder,
   rejectPurchaseOrder,
   submitPurchaseOrder,
@@ -26,6 +27,7 @@ const STATUS_TONE: Record<string, string> = {
 
 export function PurchaseOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
   const [po, setPo] = useState<PurchaseOrderFull | null>(null);
@@ -37,6 +39,9 @@ export function PurchaseOrderDetailPage() {
   const [showReceive, setShowReceive] = useState(false);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function load() {
     if (!id) return;
@@ -51,6 +56,19 @@ export function PurchaseOrderDetailPage() {
   }
 
   useEffect(load, [id]);
+
+  async function handleDelete() {
+    if (!id) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deletePurchaseOrder(id);
+      navigate("/purchasing/orders");
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this purchase order.");
+      setDeleting(false);
+    }
+  }
 
   async function handleSubmit() {
     if (!id) return;
@@ -153,7 +171,29 @@ export function PurchaseOrderDetailPage() {
             Receive goods
           </Button>
         )}
+        {(po.status === "draft" || po.status === "cancelled") && canCreate && (
+          <Button variant="secondary" disabled={busy} onClick={() => setShowDeleteConfirm(true)}>
+            Delete
+          </Button>
+        )}
       </div>
+
+      {showDeleteConfirm && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-1">
+            Delete purchase order <span className="font-mono-data">{po.po_number}</span> permanently? This cannot be undone.
+          </p>
+          {deleteError && <p className="text-sm text-negative mb-3">{deleteError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button disabled={deleting} onClick={handleDelete}>
+              Delete permanently
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {showRejectReason && (
         <Card className="p-4 mb-6 flex items-end gap-2">

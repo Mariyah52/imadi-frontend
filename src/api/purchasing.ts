@@ -28,6 +28,10 @@ export function getPurchaseOrder(id: string) {
   return apiRequest<PurchaseOrderFull>(`/purchasing/purchase-orders/${id}`);
 }
 
+export function deletePurchaseOrder(id: string) {
+  return apiRequest<void>(`/purchasing/purchase-orders/${id}`, { method: "DELETE" });
+}
+
 export function createPurchaseOrder(body: PurchaseOrderCreateRequest) {
   return apiRequest<PurchaseOrderFull>("/purchasing/purchase-orders", { method: "POST", body });
 }
@@ -73,6 +77,10 @@ export function listBills(
 
 export function getBill(id: string) {
   return apiRequest<BillFull>(`/purchasing/bills/${id}`);
+}
+
+export function deleteBill(id: string) {
+  return apiRequest<void>(`/purchasing/bills/${id}`, { method: "DELETE" });
 }
 
 export function createBill(body: BillCreateRequest) {

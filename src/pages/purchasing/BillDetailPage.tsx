@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { approveBill, getBill, rejectBill, submitBill } from "../../api/purchasing";
+import { approveBill, deleteBill, getBill, rejectBill, submitBill } from "../../api/purchasing";
 import { getSupplierProfile } from "../../api/suppliers";
 import type { BillFull } from "../../types/api";
 import { Card } from "../../components/ui/Card";
@@ -22,6 +22,7 @@ const STATUS_TONE: Record<string, string> = {
 
 export function BillDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { hasPermission } = useAuth();
 
   const [bill, setBill] = useState<BillFull | null>(null);
@@ -33,6 +34,9 @@ export function BillDetailPage() {
   const [showPayment, setShowPayment] = useState(false);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function load() {
     if (!id) return;
@@ -47,6 +51,19 @@ export function BillDetailPage() {
   }
 
   useEffect(load, [id]);
+
+  async function handleDelete() {
+    if (!id) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteBill(id);
+      navigate("/purchasing/bills");
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this bill.");
+      setDeleting(false);
+    }
+  }
 
   async function handleSubmit() {
     if (!id) return;
@@ -147,7 +164,29 @@ export function BillDetailPage() {
             Record payment
           </Button>
         )}
+        {(bill.status === "draft" || bill.status === "cancelled") && canCreate && (
+          <Button variant="secondary" disabled={busy} onClick={() => setShowDeleteConfirm(true)}>
+            Delete
+          </Button>
+        )}
       </div>
+
+      {showDeleteConfirm && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-1">
+            Delete bill <span className="font-mono-data">{bill.bill_number}</span> permanently? This cannot be undone.
+          </p>
+          {deleteError && <p className="text-sm text-negative mb-3">{deleteError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button disabled={deleting} onClick={handleDelete}>
+              Delete permanently
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {showRejectReason && (
         <Card className="p-4 mb-6 flex items-end gap-2">
