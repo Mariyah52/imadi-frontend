@@ -168,7 +168,7 @@ export function InvoiceDetailPage() {
             Edit
           </Button>
         )}
-        {isDraft && canEdit && (
+        {(isDraft || invoice.status === "cancelled") && canEdit && (
           <Button variant="secondary" disabled={busy} onClick={() => setShowDeleteConfirm(true)}>
             Delete
           </Button>
