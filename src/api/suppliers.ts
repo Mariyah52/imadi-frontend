@@ -28,6 +28,10 @@ export function updateSupplier(id: string, body: SupplierUpdateRequest) {
   return apiRequest<Supplier>(`/suppliers/${id}`, { method: "PATCH", body });
 }
 
+export function deleteSupplier(id: string) {
+  return apiRequest<void>(`/suppliers/${id}`, { method: "DELETE" });
+}
+
 export function listPurchaseHistory(id: string) {
   return apiRequest<PurchaseOrder[]>(`/suppliers/${id}/purchase-history`);
 }

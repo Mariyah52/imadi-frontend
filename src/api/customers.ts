@@ -31,6 +31,10 @@ export function updateCustomer(id: string, body: CustomerUpdateRequest) {
   return apiRequest<Customer>(`/customers/${id}`, { method: "PATCH", body });
 }
 
+export function deleteCustomer(id: string) {
+  return apiRequest<void>(`/customers/${id}`, { method: "DELETE" });
+}
+
 export function listCustomerInvoices(id: string) {
   return apiRequest<CustomerInvoice[]>(`/customers/${id}/invoices`);
 }

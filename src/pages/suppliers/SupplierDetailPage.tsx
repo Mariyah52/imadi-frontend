@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import {
   addSupplierNote,
+  deleteSupplier,
   getSupplierProfile,
   listPurchaseHistory,
   listSupplierBills,
@@ -18,6 +19,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 export function SupplierDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { hasPermission } = useAuth();
   const [profile, setProfile] = useState<SupplierProfile | null>(null);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
@@ -25,6 +27,9 @@ export function SupplierDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showEdit, setShowEdit] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function load() {
     if (!id) return;
@@ -39,6 +44,19 @@ export function SupplierDetailPage() {
   }
 
   useEffect(load, [id]);
+
+  async function handleDelete() {
+    if (!id) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteSupplier(id);
+      navigate("/suppliers");
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this supplier.");
+      setDeleting(false);
+    }
+  }
 
   if (loading) return <p className="text-sm text-ink-muted">Loading…</p>;
   if (error) return <p className="text-sm text-negative">{error}</p>;
@@ -68,8 +86,33 @@ export function SupplierDetailPage() {
               Edit
             </Button>
           )}
+          {hasPermission("suppliers:edit") && (
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(true)}>
+              Delete
+            </Button>
+          )}
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-1">
+            Delete <span className="font-medium">{profile.company_name}</span> permanently? This cannot be undone.
+          </p>
+          <p className="text-xs text-ink-muted mb-3">
+            Blocked if this supplier has an outstanding balance.
+          </p>
+          {deleteError && <p className="text-sm text-negative mb-3">{deleteError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button disabled={deleting} onClick={handleDelete}>
+              Delete permanently
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
         <Card className="p-5">
