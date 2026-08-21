@@ -90,6 +90,7 @@ export function InvoicesListPage() {
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-ink-muted">
                 <th className="px-5 py-3 font-medium">Invoice</th>
+                <th className="px-5 py-3 font-medium">Customer</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Issued</th>
                 <th className="px-5 py-3 font-medium">Due</th>
@@ -104,6 +105,7 @@ export function InvoicesListPage() {
                       {inv.invoice_number}
                     </Link>
                   </td>
+                  <td className="px-5 py-3 text-ink">{inv.customer_name}</td>
                   <td className="px-5 py-3">
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${

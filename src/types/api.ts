@@ -390,6 +390,7 @@ export interface InvoiceSummary {
   id: string;
   invoice_number: string;
   customer_id: string;
+  customer_name: string;
   status: string;
   effective_status: string;
   issue_date: string;
