@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { getProduct, getProductHistory, listStockForProduct } from "../../api/inventory";
+import { deleteProduct, getProduct, getProductHistory, listStockForProduct } from "../../api/inventory";
 import type { ProductStockSummary, StockItem, StockMovement } from "../../types/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -14,6 +14,7 @@ type ActionMode = "receive" | "issue" | "adjust" | null;
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { hasPermission } = useAuth();
   const canManage = hasPermission("inventory:manage");
 
@@ -24,6 +25,9 @@ export function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [actionMode, setActionMode] = useState<ActionMode>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function load() {
     if (!id) return;
@@ -38,6 +42,19 @@ export function ProductDetailPage() {
   }
 
   useEffect(load, [id]);
+
+  async function handleDelete() {
+    if (!id) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteProduct(id);
+      navigate("/inventory");
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this product.");
+      setDeleting(false);
+    }
+  }
 
   if (loading) return <p className="text-sm text-ink-muted">Loading…</p>;
   if (error) return <p className="text-sm text-negative">{error}</p>;
@@ -68,8 +85,33 @@ export function ProductDetailPage() {
               Edit
             </Button>
           )}
+          {canManage && (
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(true)}>
+              Delete
+            </Button>
+          )}
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm text-ink mb-1">
+            Delete <span className="font-medium">{product.name}</span> permanently? This cannot be undone.
+          </p>
+          <p className="text-xs text-ink-muted mb-3">
+            Blocked if this product still has stock on hand.
+          </p>
+          {deleteError && <p className="text-sm text-negative mb-3">{deleteError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button disabled={deleting} onClick={handleDelete}>
+              Delete permanently
+            </Button>
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
         <Card className="p-5">

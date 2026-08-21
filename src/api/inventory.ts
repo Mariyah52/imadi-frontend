@@ -55,6 +55,10 @@ export function updateProduct(
   return apiRequest<Product>(`/inventory/products/${id}`, { method: "PATCH", body });
 }
 
+export function deleteProduct(id: string) {
+  return apiRequest<void>(`/inventory/products/${id}`, { method: "DELETE" });
+}
+
 export function createWarehouse(body: { code: string; name: string }) {
   return apiRequest<Warehouse>("/inventory/warehouses", { method: "POST", body });
 }
