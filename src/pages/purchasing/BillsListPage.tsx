@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { listBills } from "../../api/purchasing";
+import { PurchasingTabs } from "./PurchasingTabs";
 import type { BillSummary } from "../../types/api";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
@@ -49,7 +50,7 @@ export function BillsListPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl font-semibold text-ink mb-1">Bills</h1>
+          <h1 className="font-display text-xl font-semibold text-ink mb-1">Purchases</h1>
           <p className="text-sm text-ink-muted">{total} total</p>
         </div>
         {hasPermission("purchasing:create") && (
@@ -58,6 +59,8 @@ export function BillsListPage() {
           </Link>
         )}
       </div>
+
+      <PurchasingTabs />
 
       <div className="mb-4 flex gap-2 flex-wrap">
         {STATUSES.map((s) => (
