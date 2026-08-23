@@ -35,7 +35,7 @@ export function BillsListPage() {
   const pageSize = 20;
 
   useEffect(() => {
-    listSuppliers("", 1, 500).then((res) => setSuppliers(res.items)).catch(() => {});
+    listSuppliers("", 1, 100).then((res) => setSuppliers(res.items)).catch(() => {});
   }, []);
 
   function load() {

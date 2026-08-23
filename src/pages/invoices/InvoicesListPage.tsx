@@ -33,7 +33,7 @@ export function InvoicesListPage() {
   const pageSize = 20;
 
   useEffect(() => {
-    listCustomers("", 1, 500).then((res) => setCustomers(res.items)).catch(() => {});
+    listCustomers("", 1, 100).then((res) => setCustomers(res.items)).catch(() => {});
   }, []);
 
   function load() {
