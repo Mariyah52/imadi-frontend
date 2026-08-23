@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 const TABS = [
   { to: "/purchasing/orders", label: "Purchase Orders" },
-  { to: "/purchasing/bills", label: "Bills" },
+  { to: "/purchasing/bills", label: "Purchase Bills" },
 ];
 
 export function PurchasingTabs() {
