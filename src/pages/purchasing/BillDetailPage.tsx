@@ -12,7 +12,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 const STATUS_TONE: Record<string, string> = {
   draft: "bg-navy-100 text-ink-muted",
-  submitted: "bg-amber-100 text-amber-600",
+  awaiting_approval: "bg-amber-100 text-amber-600",
   approved: "bg-amber-100 text-amber-600",
   rejected: "bg-negative-bg text-negative",
   partially_paid: "bg-amber-100 text-amber-600",
@@ -149,7 +149,7 @@ export function BillDetailPage() {
             Submit for approval
           </Button>
         )}
-        {bill.status === "submitted" && canApprove && (
+        {bill.status === "awaiting_approval" && canApprove && (
           <>
             <Button disabled={busy} onClick={handleApprove}>
               Approve

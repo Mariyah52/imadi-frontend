@@ -10,11 +10,11 @@ import { Card } from "../../components/ui/Card";
 import { formatMoney } from "../../lib/format";
 import { useAuth } from "../../auth/AuthContext";
 
-const STATUSES = ["", "draft", "submitted", "approved", "rejected", "partially_paid", "paid"];
+const STATUSES = ["", "draft", "awaiting_approval", "approved", "rejected", "partially_paid", "paid"];
 
 const STATUS_TONE: Record<string, string> = {
   draft: "bg-navy-100 text-ink-muted",
-  submitted: "bg-amber-100 text-amber-600",
+  awaiting_approval: "bg-amber-100 text-amber-600",
   approved: "bg-amber-100 text-amber-600",
   rejected: "bg-negative-bg text-negative",
   partially_paid: "bg-amber-100 text-amber-600",
