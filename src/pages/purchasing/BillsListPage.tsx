@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { listBills } from "../../api/purchasing";
+import { listSuppliers } from "../../api/suppliers";
 import { PurchasingTabs } from "./PurchasingTabs";
-import type { BillSummary } from "../../types/api";
+import type { BillSummary, Supplier } from "../../types/api";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { formatMoney } from "../../lib/format";
@@ -24,6 +25,8 @@ const STATUS_TONE: Record<string, string> = {
 export function BillsListPage() {
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
+  const [supplierId, setSupplierId] = useState("");
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<BillSummary[]>([]);
   const [total, setTotal] = useState(0);
@@ -31,9 +34,13 @@ export function BillsListPage() {
   const [error, setError] = useState<string | null>(null);
   const pageSize = 20;
 
+  useEffect(() => {
+    listSuppliers("", 1, 500).then((res) => setSuppliers(res.items)).catch(() => {});
+  }, []);
+
   function load() {
     setLoading(true);
-    listBills(undefined, status || undefined, page, pageSize)
+    listBills(supplierId || undefined, status || undefined, page, pageSize)
       .then((res) => {
         setItems(res.items);
         setTotal(res.total);
@@ -42,7 +49,7 @@ export function BillsListPage() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(load, [page, status]);
+  useEffect(load, [page, status, supplierId]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -62,7 +69,7 @@ export function BillsListPage() {
 
       <PurchasingTabs />
 
-      <div className="mb-4 flex gap-2 flex-wrap">
+      <div className="mb-4 flex items-center gap-2 flex-wrap">
         {STATUSES.map((s) => (
           <button
             key={s || "all"}
@@ -77,6 +84,21 @@ export function BillsListPage() {
             {s ? s.replace("_", " ") : "All"}
           </button>
         ))}
+        <select
+          value={supplierId}
+          onChange={(e) => {
+            setSupplierId(e.target.value);
+            setPage(1);
+          }}
+          className="rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-ink"
+        >
+          <option value="">All suppliers</option>
+          {suppliers.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.company_name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <Card>

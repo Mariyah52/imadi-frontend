@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { listInvoices } from "../../api/invoices";
-import type { InvoiceSummary } from "../../types/api";
+import { listCustomers } from "../../api/customers";
+import type { Customer, InvoiceSummary } from "../../types/api";
 import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { formatMoney } from "../../lib/format";
@@ -22,6 +23,8 @@ const STATUS_TONE: Record<string, string> = {
 export function InvoicesListPage() {
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<InvoiceSummary[]>([]);
   const [total, setTotal] = useState(0);
@@ -29,9 +32,13 @@ export function InvoicesListPage() {
   const [error, setError] = useState<string | null>(null);
   const pageSize = 20;
 
+  useEffect(() => {
+    listCustomers("", 1, 500).then((res) => setCustomers(res.items)).catch(() => {});
+  }, []);
+
   function load() {
     setLoading(true);
-    listInvoices(undefined, status || undefined, page, pageSize)
+    listInvoices(customerId || undefined, status || undefined, page, pageSize)
       .then((res) => {
         setItems(
           res.items.slice().sort((a, b) => b.invoice_number.localeCompare(a.invoice_number)),
@@ -42,7 +49,7 @@ export function InvoicesListPage() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(load, [page, status]);
+  useEffect(load, [page, status, customerId]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -60,7 +67,7 @@ export function InvoicesListPage() {
         )}
       </div>
 
-      <div className="mb-4 flex gap-2 flex-wrap">
+      <div className="mb-4 flex items-center gap-2 flex-wrap">
         {STATUSES.map((s) => (
           <button
             key={s || "all"}
@@ -75,6 +82,21 @@ export function InvoicesListPage() {
             {s ? s.replace("_", " ") : "All"}
           </button>
         ))}
+        <select
+          value={customerId}
+          onChange={(e) => {
+            setCustomerId(e.target.value);
+            setPage(1);
+          }}
+          className="rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-ink"
+        >
+          <option value="">All customers</option>
+          {customers.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.company_name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <Card>
