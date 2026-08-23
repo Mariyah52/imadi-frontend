@@ -45,7 +45,7 @@ export function BillsListPage() {
         setItems(res.items);
         setTotal(res.total);
       })
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load bills."))
+      .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load purchases."))
       .finally(() => setLoading(false));
   }
 
@@ -62,7 +62,7 @@ export function BillsListPage() {
         </div>
         {hasPermission("purchasing:create") && (
           <Link to="/purchasing/bills/new">
-            <Button>New bill</Button>
+            <Button>New purchase</Button>
           </Link>
         )}
       </div>
@@ -105,13 +105,13 @@ export function BillsListPage() {
         {loading && <p className="p-6 text-sm text-ink-muted">Loading…</p>}
         {error && <p className="p-6 text-sm text-negative">{error}</p>}
         {!loading && !error && items.length === 0 && (
-          <p className="p-6 text-sm text-ink-muted">No bills match.</p>
+          <p className="p-6 text-sm text-ink-muted">No purchases match.</p>
         )}
         {!loading && !error && items.length > 0 && (
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-ink-muted">
-                <th className="px-5 py-3 font-medium">Bill</th>
+                <th className="px-5 py-3 font-medium">Purchase</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Due</th>
                 <th className="px-5 py-3 font-medium text-right">Total</th>

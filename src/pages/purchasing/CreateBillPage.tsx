@@ -61,7 +61,7 @@ export function CreateBillPage() {
 
   return (
     <div>
-      <h1 className="font-display text-xl font-semibold text-ink mb-6">New bill</h1>
+      <h1 className="font-display text-xl font-semibold text-ink mb-6">New purchase</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="p-5">
@@ -69,7 +69,7 @@ export function CreateBillPage() {
             <Field label="Supplier">
               <SupplierPicker value={supplier} onChange={setSupplier} />
             </Field>
-            <Field label="Bill date">
+            <Field label="Purchase date">
               <Input type="date" required value={billDate} onChange={(e) => setBillDate(e.target.value)} />
             </Field>
             <Field label="Due date">
@@ -153,7 +153,7 @@ export function CreateBillPage() {
 
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={submitting}>
-            {submitting ? "Creating…" : "Create draft bill"}
+            {submitting ? "Creating…" : "Create draft purchase"}
           </Button>
         </div>
       </form>

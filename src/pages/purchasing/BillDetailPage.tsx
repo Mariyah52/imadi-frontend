@@ -46,7 +46,7 @@ export function BillDetailPage() {
         return getSupplierProfile(b.supplier_id);
       })
       .then((s) => setSupplierName(s.company_name))
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load this bill."))
+      .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load this purchase."))
       .finally(() => setLoading(false));
   }
 
@@ -60,7 +60,7 @@ export function BillDetailPage() {
       await deleteBill(id);
       navigate("/purchasing/bills");
     } catch (err) {
-      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this bill.");
+      setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this purchase.");
       setDeleting(false);
     }
   }
@@ -119,7 +119,7 @@ export function BillDetailPage() {
   return (
     <div>
       <Link to="/purchasing/bills" className="text-sm text-navy-800 hover:underline">
-        ← Bills
+        ← Purchases
       </Link>
 
       <div className="mt-3 mb-6 flex items-center justify-between">
@@ -174,7 +174,7 @@ export function BillDetailPage() {
       {showDeleteConfirm && (
         <Card className="p-4 mb-6">
           <p className="text-sm text-ink mb-1">
-            Delete bill <span className="font-mono-data">{bill.bill_number}</span> permanently? This cannot be undone.
+            Delete purchase <span className="font-mono-data">{bill.bill_number}</span> permanently? This cannot be undone.
           </p>
           {deleteError && <p className="text-sm text-negative mb-3">{deleteError}</p>}
           <div className="flex justify-end gap-2">
