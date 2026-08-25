@@ -219,6 +219,31 @@ export function getTrialBalanceReport(asOf: string) {
   return apiRequest<TrialBalanceReport>("/reports/trial-balance", { query: { as_of: asOf } });
 }
 
+export interface CustomerLedgerLine {
+  date: string;
+  type: string;
+  reference: string;
+  description: string;
+  debit: string;
+  credit: string;
+  running_balance: string;
+}
+
+export interface CustomerLedgerReport {
+  customer_id: string;
+  period_start: string;
+  period_end: string;
+  opening_balance: string;
+  closing_balance: string;
+  lines: CustomerLedgerLine[];
+}
+
+export function getCustomerLedgerReport(customerId: string, periodStart: string, periodEnd: string) {
+  return apiRequest<CustomerLedgerReport>("/reports/customer-ledger", {
+    query: { customer_id: customerId, period_start: periodStart, period_end: periodEnd },
+  });
+}
+
 export function getBalanceSheetReport(asOf: string) {
   return apiRequest<BalanceSheetReport>("/reports/balance-sheet", { query: { as_of: asOf } });
 }

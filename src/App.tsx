@@ -29,6 +29,7 @@ import { AgingReportPage } from "./pages/reports/AgingReportPage";
 import { InventoryReportPage } from "./pages/reports/InventoryReportPage";
 import { StockValuationReportPage } from "./pages/reports/StockValuationReportPage";
 import { TrialBalanceReportPage } from "./pages/reports/TrialBalanceReportPage";
+import { CustomerLedgerReportPage } from "./pages/reports/CustomerLedgerReportPage";
 import { BalanceSheetReportPage } from "./pages/reports/BalanceSheetReportPage";
 import { GeneralLedgerReportPage } from "./pages/reports/GeneralLedgerReportPage";
 import { CashFlowReportPage } from "./pages/reports/CashFlowReportPage";
@@ -290,6 +291,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <TrialBalanceReportPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports/customer-ledger"
+        element={
+          <ProtectedRoute>
+            <CustomerLedgerReportPage />
           </ProtectedRoute>
         }
       />
