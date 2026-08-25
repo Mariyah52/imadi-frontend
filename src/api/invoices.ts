@@ -1,4 +1,4 @@
-import { apiRequest } from "./client";
+import { apiRequest, uploadFormData } from "./client";
 import type {
   Invoice,
   InvoiceCreateRequest,
@@ -42,11 +42,12 @@ export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
 
-export function emailInvoice(id: string, toEmail: string, message?: string) {
-  return apiRequest<void>(`/invoices/${id}/email`, {
-    method: "POST",
-    body: { to_email: toEmail, message },
-  });
+export function emailInvoice(id: string, toEmail: string, message?: string, attachment?: File) {
+  const formData = new FormData();
+  formData.append("to_email", toEmail);
+  if (message) formData.append("message", message);
+  if (attachment) formData.append("attachment", attachment);
+  return uploadFormData<void>(`/invoices/${id}/email`, formData);
 }
 
 export function updateInvoice(

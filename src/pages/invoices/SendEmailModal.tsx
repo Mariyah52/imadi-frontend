@@ -19,6 +19,7 @@ export function SendEmailModal({
 }) {
   const [toEmail, setToEmail] = useState(defaultEmail);
   const [message, setMessage] = useState("");
+  const [attachment, setAttachment] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -27,7 +28,7 @@ export function SendEmailModal({
     setError(null);
     setSubmitting(true);
     try {
-      await emailInvoice(invoiceId, toEmail.trim(), message.trim() || undefined);
+      await emailInvoice(invoiceId, toEmail.trim(), message.trim() || undefined, attachment ?? undefined);
       onSent();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't send the email.");
@@ -51,6 +52,18 @@ export function SendEmailModal({
           </Field>
           <Field label="Message (optional)">
             <Textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} />
+          </Field>
+          <Field label="Attach a file (optional)">
+            <input
+              type="file"
+              onChange={(e) => setAttachment(e.target.files?.[0] ?? null)}
+              className="w-full text-sm text-ink-muted file:mr-3 file:rounded-md file:border-0 file:bg-navy-100 file:px-3 file:py-2 file:text-sm file:font-medium file:text-ink hover:file:bg-navy-100/70"
+            />
+            {attachment && (
+              <p className="mt-1 text-xs text-ink-muted">
+                {attachment.name} ({(attachment.size / 1024).toFixed(0)} KB)
+              </p>
+            )}
           </Field>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
