@@ -10,8 +10,6 @@ const REPORTS = [
   { to: "/reports/balance-sheet", label: "Balance sheet", desc: "Assets, liabilities, and equity" },
   { to: "/reports/cash-flow", label: "Cash flow", desc: "Movement across nominated cash/bank accounts" },
   { to: "/reports/general-ledger", label: "General ledger", desc: "Line-by-line activity for one account" },
-  { to: "/reports/driver-performance", label: "Driver performance", desc: "Shipment delivery and on-time rate" },
-  { to: "/reports/vehicle-cost", label: "Vehicle cost", desc: "Fuel and maintenance cost per vehicle" },
 ];
 
 export function ReportsIndexPage() {

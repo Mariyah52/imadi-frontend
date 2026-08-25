@@ -32,8 +32,6 @@ import { TrialBalanceReportPage } from "./pages/reports/TrialBalanceReportPage";
 import { BalanceSheetReportPage } from "./pages/reports/BalanceSheetReportPage";
 import { GeneralLedgerReportPage } from "./pages/reports/GeneralLedgerReportPage";
 import { CashFlowReportPage } from "./pages/reports/CashFlowReportPage";
-import { DriverPerformanceReportPage } from "./pages/reports/DriverPerformanceReportPage";
-import { VehicleCostReportPage } from "./pages/reports/VehicleCostReportPage";
 import { AccountingIndexPage } from "./pages/accounting/AccountingIndexPage";
 import { ChartOfAccountsPage } from "./pages/accounting/ChartOfAccountsPage";
 import { JournalEntriesListPage } from "./pages/accounting/JournalEntriesListPage";
@@ -316,22 +314,6 @@ export default function App() {
         element={
           <ProtectedRoute>
             <CashFlowReportPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/reports/driver-performance"
-        element={
-          <ProtectedRoute>
-            <DriverPerformanceReportPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/reports/vehicle-cost"
-        element={
-          <ProtectedRoute>
-            <VehicleCostReportPage />
           </ProtectedRoute>
         }
       />
