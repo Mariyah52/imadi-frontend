@@ -42,11 +42,13 @@ export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
 
-export function emailInvoice(id: string, toEmail: string, message?: string, attachment?: File) {
+export function emailInvoice(id: string, toEmail: string, message?: string, attachments?: File[]) {
   const formData = new FormData();
   formData.append("to_email", toEmail);
   if (message) formData.append("message", message);
-  if (attachment) formData.append("attachment", attachment);
+  for (const file of attachments ?? []) {
+    formData.append("attachments", file);
+  }
   return uploadFormData<void>(`/invoices/${id}/email`, formData);
 }
 
