@@ -115,7 +115,7 @@ export function CreateBillPage() {
                     <Input
                       type="number"
                       min={0}
-                      step="0.01"
+                      step="0.0001"
                       required
                       value={item.unit_cost}
                       onChange={(e) => updateItem(i, { unit_cost: e.target.value })}

@@ -163,7 +163,7 @@ export function EditInvoicePage() {
                     <Input
                       type="number"
                       min={0}
-                      step="0.01"
+                      step="0.0001"
                       required
                       value={item.unit_price}
                       onChange={(e) => updateItem(i, { unit_price: e.target.value })}
