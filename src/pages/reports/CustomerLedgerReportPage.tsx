@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { downloadFile } from "../../api/client";
 import { getCustomerLedgerReport } from "../../api/reports";
+import { voidPayment } from "../../api/invoices";
 import type { CustomerLedgerReport } from "../../api/reports";
 import { listCustomers } from "../../api/customers";
 import type { Customer } from "../../types/api";
@@ -24,6 +25,22 @@ export function CustomerLedgerReportPage() {
   useEffect(() => {
     listCustomers("", 1, 100).then((res) => setCustomers(res.items)).catch(() => {});
   }, []);
+
+  async function handleVoid(paymentNumber: string) {
+    const reason = window.prompt(`Reason for voiding ${paymentNumber}:`);
+    if (reason === null || reason.trim() === "") return;
+    const confirmed = window.confirm(`Void payment ${paymentNumber}? This cannot be undone.`);
+    if (!confirmed) return;
+    try {
+      await voidPayment(paymentNumber, reason.trim());
+      if (customerId) {
+        const result = await getCustomerLedgerReport(customerId, periodStart, periodEnd);
+        setReport(result);
+      }
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't void this payment.");
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -143,6 +160,7 @@ export function CustomerLedgerReportPage() {
                   <th className="px-5 py-3 font-medium text-right">Debit</th>
                   <th className="px-5 py-3 font-medium text-right">Credit</th>
                   <th className="px-5 py-3 font-medium text-right">Balance</th>
+                  <th className="px-5 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody>
@@ -167,6 +185,17 @@ export function CustomerLedgerReportPage() {
                       </td>
                       <td className="px-5 py-3 text-right font-mono-data">
                         {formatMoney(l.running_balance)}
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        {l.type === "payment" && (
+                          <button
+                            type="button"
+                            onClick={() => handleVoid(l.reference)}
+                            className="text-xs text-negative hover:underline"
+                          >
+                            Void
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))

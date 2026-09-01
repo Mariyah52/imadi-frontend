@@ -42,6 +42,13 @@ export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
 
+export function voidPayment(paymentNumber: string, reason: string) {
+  return apiRequest<void>(`/invoices/payments/${paymentNumber}/void`, {
+    method: "POST",
+    body: { reason },
+  });
+}
+
 export function emailInvoice(id: string, toEmail: string, message?: string, attachments?: File[]) {
   const formData = new FormData();
   formData.append("to_email", toEmail);
