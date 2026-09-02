@@ -70,6 +70,7 @@ export interface CustomerCreateRequest {
   credit_limit?: string;
   currency?: string;
   charges_vat?: boolean;
+  opening_balance?: string;
 }
 
 export interface CustomerInvoice {

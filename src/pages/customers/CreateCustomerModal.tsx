@@ -21,6 +21,7 @@ export function CreateCustomerModal({
   const [city, setCity] = useState("");
   const [postcode, setPostcode] = useState("");
   const [chargesVat, setChargesVat] = useState(true);
+  const [openingBalance, setOpeningBalance] = useState("0");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,6 +36,7 @@ export function CreateCustomerModal({
         email: email || undefined,
         phone: phone || undefined,
         charges_vat: chargesVat,
+        opening_balance: openingBalance || "0",
       });
       if (line1.trim() && city.trim() && postcode.trim()) {
         await addAddress(customer.id, {
@@ -81,6 +83,15 @@ export function CreateCustomerModal({
             />
             VAT registered (charge VAT on this customer's invoices)
           </label>
+          <Field label="Opening balance (optional — amount already owed before this system)">
+            <Input
+              type="number"
+              min={0}
+              step="0.01"
+              value={openingBalance}
+              onChange={(e) => setOpeningBalance(e.target.value)}
+            />
+          </Field>
           <div className="border-t border-border pt-4 mt-1">
             <p className="text-xs text-ink-muted mb-3">
               Address (optional — leave blank to add later from the customer's page)
