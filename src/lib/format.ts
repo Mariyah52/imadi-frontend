@@ -12,6 +12,14 @@ export function monthStartISO() {
   return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
 }
 
+// Fiscal year starts 1 August. If today is Aug-Dec, the year started this
+// calendar year; if today is Jan-Jul, it started last calendar year.
+export function fiscalYearStartISO() {
+  const d = new Date();
+  const fyStartYear = d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+  return new Date(fyStartYear, 7, 1).toISOString().slice(0, 10);
+}
+
 export function currentQuarter() {
   const d = new Date();
   const qStartMonth = Math.floor(d.getMonth() / 3) * 3;

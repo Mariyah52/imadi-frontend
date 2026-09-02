@@ -3,7 +3,7 @@ import { Card } from "../components/ui/Card";
 import { ApiError } from "../api/client";
 import { getCustomerAging, getProfitReport, getSalesReport } from "../api/reports";
 import type { AgingReport, ProfitReport, SalesReport } from "../api/reports";
-import { formatMoney, monthStartISO, todayISO } from "../lib/format";
+import { fiscalYearStartISO, formatMoney, todayISO } from "../lib/format";
 
 function KpiCard({
   label,
@@ -37,7 +37,7 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const start = monthStartISO();
+    const start = fiscalYearStartISO();
     const end = todayISO();
     Promise.all([getProfitReport(start, end), getSalesReport(start, end), getCustomerAging(end)])
       .then(([p, s, a]) => {
@@ -52,7 +52,7 @@ export function DashboardPage() {
   return (
     <div>
       <h1 className="font-display text-xl font-semibold text-ink mb-1">Dashboard</h1>
-      <p className="text-sm text-ink-muted mb-6">Month to date, as of {todayISO()}</p>
+      <p className="text-sm text-ink-muted mb-6">Year to date (FY from 1 Aug), as of {todayISO()}</p>
 
       {loading && <p className="text-sm text-ink-muted">Loading…</p>}
       {error && <p className="text-sm text-negative">{error}</p>}
