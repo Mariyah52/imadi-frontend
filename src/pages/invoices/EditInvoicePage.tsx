@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { getInvoice, updateInvoice } from "../../api/invoices";
+import { getCustomerProfile } from "../../api/customers";
 import { ApiError } from "../../api/client";
 import type { InvoiceItemCreateRequest, Product } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -14,6 +15,7 @@ function toItemRequest(item: {
   quantity: string;
   unit_price: string;
   discount_percent: string;
+  vat_treatment?: InvoiceItemCreateRequest["vat_treatment"];
 }): InvoiceItemCreateRequest {
   return {
     product_id: item.product_id ?? undefined,
@@ -21,6 +23,11 @@ function toItemRequest(item: {
     quantity: item.quantity,
     unit_price: item.unit_price,
     discount_percent: item.discount_percent,
+    // IMPORTANT: must carry this over. If omitted, the backend defaults
+    // every line to "standard" (20%) VAT on save — silently re-charging
+    // VAT on invoices for non-VAT customers. This was the bug where
+    // editing a draft invoice added VAT that was never ticked.
+    vat_treatment: item.vat_treatment ?? "standard",
   };
 }
 
@@ -36,6 +43,10 @@ export function EditInvoicePage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Drives the VAT default for lines added while editing — matches the
+  // same "standard" / "zero" logic CreateInvoicePage uses, so adding a
+  // line to a non-VAT customer's invoice doesn't sneak VAT back in.
+  const [customerChargesVat, setCustomerChargesVat] = useState(true);
 
   useEffect(() => {
     if (!id) return;
@@ -49,6 +60,11 @@ export function EditInvoicePage() {
         setDueDate(inv.due_date);
         setNotes(inv.notes ?? "");
         setItems(inv.items.map(toItemRequest));
+        getCustomerProfile(inv.customer_id)
+          .then((customer) => setCustomerChargesVat(customer.charges_vat ?? true))
+          .catch(() => {
+            /* Non-fatal — VAT default for new lines just falls back to "standard". */
+          });
       })
       .catch((err) => setLoadError(err instanceof ApiError ? err.message : "Couldn't load this invoice."))
       .finally(() => setLoading(false));
@@ -73,7 +89,13 @@ export function EditInvoicePage() {
   function addLine() {
     setItems((prev) => [
       ...prev,
-      { description: "", quantity: "1", unit_price: "0", discount_percent: "0", vat_treatment: "standard" },
+      {
+        description: "",
+        quantity: "1",
+        unit_price: "0",
+        discount_percent: "0",
+        vat_treatment: customerChargesVat ? "standard" : "zero",
+      },
     ]);
   }
 
