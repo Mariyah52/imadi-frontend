@@ -22,6 +22,7 @@ export function CreateCustomerModal({
   const [postcode, setPostcode] = useState("");
   const [chargesVat, setChargesVat] = useState(true);
   const [openingBalance, setOpeningBalance] = useState("0");
+  const [openingBalanceDate, setOpeningBalanceDate] = useState(new Date().toISOString().slice(0, 10));
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -37,6 +38,7 @@ export function CreateCustomerModal({
         phone: phone || undefined,
         charges_vat: chargesVat,
         opening_balance: openingBalance || "0",
+        opening_balance_date: openingBalanceDate,
       });
       if (line1.trim() && city.trim() && postcode.trim()) {
         await addAddress(customer.id, {
@@ -92,6 +94,15 @@ export function CreateCustomerModal({
               onChange={(e) => setOpeningBalance(e.target.value)}
             />
           </Field>
+          {Number(openingBalance) > 0 && (
+            <Field label="Opening balance as of">
+              <Input
+                type="date"
+                value={openingBalanceDate}
+                onChange={(e) => setOpeningBalanceDate(e.target.value)}
+              />
+            </Field>
+          )}
           <div className="border-t border-border pt-4 mt-1">
             <p className="text-xs text-ink-muted mb-3">
               Address (optional — leave blank to add later from the customer's page)

@@ -35,6 +35,13 @@ export function deleteCustomer(id: string) {
   return apiRequest<void>(`/customers/${id}`, { method: "DELETE" });
 }
 
+export function addOpeningBalance(customerId: string, amount: string, asOfDate: string) {
+  return apiRequest<{ invoice_id: string; invoice_number: string }>(
+    `/customers/${customerId}/opening-balance`,
+    { method: "POST", body: { amount, as_of_date: asOfDate } },
+  );
+}
+
 export function listCustomerInvoices(id: string) {
   return apiRequest<CustomerInvoice[]>(`/customers/${id}/invoices`);
 }

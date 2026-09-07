@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { deleteCustomer, getCustomerProfile, listCustomerInvoices } from "../../api/customers";
+import { addOpeningBalance, deleteCustomer, getCustomerProfile, listCustomerInvoices } from "../../api/customers";
 import type { CustomerInvoice, CustomerProfile } from "../../types/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
@@ -25,6 +25,11 @@ export function CustomerDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [showOpeningBalance, setShowOpeningBalance] = useState(false);
+  const [obAmount, setObAmount] = useState("");
+  const [obDate, setObDate] = useState(new Date().toISOString().slice(0, 10));
+  const [obError, setObError] = useState<string | null>(null);
+  const [obSubmitting, setObSubmitting] = useState(false);
 
   function load() {
     if (!id) return;
@@ -49,6 +54,22 @@ export function CustomerDetailPage() {
     } catch (err) {
       setDeleteError(err instanceof ApiError ? err.message : "Couldn't delete this customer.");
       setDeleting(false);
+    }
+  }
+
+  async function handleAddOpeningBalance() {
+    if (!id || !obAmount || Number(obAmount) <= 0) return;
+    setObSubmitting(true);
+    setObError(null);
+    try {
+      await addOpeningBalance(id, obAmount, obDate);
+      setShowOpeningBalance(false);
+      setObAmount("");
+      load();
+    } catch (err) {
+      setObError(err instanceof ApiError ? err.message : "Couldn't add opening balance.");
+    } finally {
+      setObSubmitting(false);
     }
   }
 
@@ -81,12 +102,52 @@ export function CustomerDetailPage() {
             </Button>
           )}
           {hasPermission("customers:edit") && (
+            <Button variant="secondary" onClick={() => setShowOpeningBalance(true)}>
+              Add opening balance
+            </Button>
+          )}
+          {hasPermission("customers:edit") && (
             <Button variant="secondary" onClick={() => setShowDeleteConfirm(true)}>
               Delete
             </Button>
           )}
         </div>
       </div>
+
+      {showOpeningBalance && (
+        <Card className="p-4 mb-6">
+          <p className="text-sm font-medium text-ink mb-3">Add opening balance</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <label className="mb-1 block text-xs text-ink-muted">Amount</label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={obAmount}
+                onChange={(e) => setObAmount(e.target.value)}
+                className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="mb-1 block text-xs text-ink-muted">As of date</label>
+              <input
+                type="date"
+                value={obDate}
+                onChange={(e) => setObDate(e.target.value)}
+                className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm"
+              />
+            </div>
+            <Button variant="secondary" onClick={() => setShowOpeningBalance(false)}>
+              Cancel
+            </Button>
+            <Button disabled={obSubmitting} onClick={handleAddOpeningBalance}>
+              {obSubmitting ? "Adding…" : "Add"}
+            </Button>
+          </div>
+          {obError && <p className="mt-2 text-sm text-negative">{obError}</p>}
+        </Card>
+      )}
 
       {showDeleteConfirm && (
         <Card className="p-4 mb-6">

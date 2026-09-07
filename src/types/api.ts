@@ -71,6 +71,7 @@ export interface CustomerCreateRequest {
   currency?: string;
   charges_vat?: boolean;
   opening_balance?: string;
+  opening_balance_date?: string;
 }
 
 export interface CustomerInvoice {
