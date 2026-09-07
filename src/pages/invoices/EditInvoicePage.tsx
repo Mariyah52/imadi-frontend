@@ -76,7 +76,7 @@ export function EditInvoicePage() {
 
   function selectProductForItem(index: number, product: Product) {
     updateItem(index, {
-      description: `${product.sku} — ${product.name}`,
+      description: `${product.name}`,
       unit_price: product.selling_price,
       product_id: product.id,
     });
