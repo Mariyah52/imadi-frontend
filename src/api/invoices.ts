@@ -42,6 +42,26 @@ export function recordInvoicePayment(id: string, body: InvoicePaymentRequest) {
   return apiRequest<InvoicePayment>(`/invoices/${id}/payments`, { method: "POST", body });
 }
 
+export interface CreditNoteRequest {
+  amount: string;
+  credit_date: string;
+  reason?: string;
+}
+
+export interface CreditNoteResult {
+  id: string;
+  credit_note_number: string;
+  amount: string;
+  credit_date: string;
+  reason: string | null;
+  invoice_status_after: string;
+  invoice_new_total: string;
+}
+
+export function applyCreditNote(id: string, body: CreditNoteRequest) {
+  return apiRequest<CreditNoteResult>(`/invoices/${id}/credit-notes`, { method: "POST", body });
+}
+
 export function voidPayment(paymentNumber: string, reason: string) {
   return apiRequest<void>(`/invoices/payments/${paymentNumber}/void`, {
     method: "POST",

@@ -8,6 +8,7 @@ import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { formatMoney } from "../../lib/format";
 import { RecordPaymentModal } from "./RecordPaymentModal";
+import { CreditNoteModal } from "./CreditNoteModal";
 import { SendEmailModal } from "./SendEmailModal";
 import { InvoiceLetterhead, InvoiceBillTo, InvoicePaymentDetails } from "./InvoiceLetterhead";
 import { useAuth } from "../../auth/AuthContext";
@@ -35,6 +36,7 @@ export function InvoiceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [showCreditNote, setShowCreditNote] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
   const [showCancelReason, setShowCancelReason] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
@@ -183,6 +185,11 @@ export function InvoiceDetailPage() {
             Record payment
           </Button>
         )}
+        {invoice.status !== "draft" && invoice.status !== "cancelled" && canEdit && (
+          <Button variant="secondary" disabled={busy} onClick={() => setShowCreditNote(true)}>
+            Add credit note
+          </Button>
+        )}
         {canCreate && (
           <Button variant="secondary" disabled={busy} onClick={handleDuplicate}>
             Duplicate
@@ -312,6 +319,18 @@ export function InvoiceDetailPage() {
           onClose={() => setShowPayment(false)}
           onRecorded={() => {
             setShowPayment(false);
+            load();
+          }}
+        />
+      )}
+
+      {showCreditNote && (
+        <CreditNoteModal
+          invoiceId={id}
+          total={formatMoney(invoice.total)}
+          onClose={() => setShowCreditNote(false)}
+          onApplied={() => {
+            setShowCreditNote(false);
             load();
           }}
         />
