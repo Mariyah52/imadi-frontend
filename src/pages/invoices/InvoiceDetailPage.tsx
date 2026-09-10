@@ -185,7 +185,10 @@ export function InvoiceDetailPage() {
             Record payment
           </Button>
         )}
-        {invoice.status !== "draft" && invoice.status !== "cancelled" && canEdit && (
+        {invoice.status !== "draft" &&
+  invoice.status !== "cancelled" &&
+  canEdit &&
+  Number(invoice.balance) > 0 && (
           <Button variant="secondary" disabled={busy} onClick={() => setShowCreditNote(true)}>
             Add credit note
           </Button>
@@ -327,7 +330,7 @@ export function InvoiceDetailPage() {
       {showCreditNote && (
         <CreditNoteModal
           invoiceId={id}
-          total={formatMoney(invoice.total)}
+          balance={invoice.balance}
           onClose={() => setShowCreditNote(false)}
           onApplied={() => {
             setShowCreditNote(false);

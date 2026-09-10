@@ -9,12 +9,12 @@ import { todayISO } from "../../lib/format";
 
 export function CreditNoteModal({
   invoiceId,
-  total,
+  balance,
   onClose,
   onApplied,
 }: {
   invoiceId: string;
-  total: string;
+  balance: string;
   onClose: () => void;
   onApplied: () => void;
 }) {
@@ -47,8 +47,7 @@ export function CreditNoteModal({
       <Card className="w-full max-w-sm p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">Add credit note</h2>
         <p className="text-xs text-ink-muted mb-4">
-          Reduces this invoice's total directly (currently {total}) — not a payment, not a
-          discount, a flat reduction of what's owed.
+          Remaining balance: {balance}. This credit note will reduce the amount still owed.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Credit amount">
@@ -56,6 +55,7 @@ export function CreditNoteModal({
               type="number"
               min={0}
               step="0.01"
+              max={balance}
               required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
