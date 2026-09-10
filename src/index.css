@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Structural navy scale */
+  --color-navy-950: #0a1628;
+  --color-navy-900: #0f1f38;
+  --color-navy-800: #16294a;
+  --color-navy-700: #1f3860;
+  --color-navy-600: #2c4a7c;
+  --color-navy-100: #e4e9f2;
+  --color-navy-50: #f4f6fa;
+
+  /* Signature accent — matched to the real IMADI logo orange (#F15C28) */
+  --color-amber-600: #c8481c;
+  --color-amber-500: #f15c28;
+  --color-amber-400: #f47c4f;
+  --color-amber-100: #fce4d9;
+
+  /* Financial movement */
+  --color-positive: #1e8a5f;
+  --color-positive-bg: #e8f5ee;
+  --color-negative: #b6412b;
+  --color-negative-bg: #fbeae6;
+
+  --color-bg: #f4f6fa;
+  --color-surface: #ffffff;
+  --color-border: #dde3ee;
+  --color-ink: #16294a;
+  --color-ink-muted: #5b6a85;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body {
+    background: white !important;
+  }
+}
