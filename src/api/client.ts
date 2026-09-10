@@ -104,10 +104,11 @@ interface RequestOptions {
   query?: Record<string, string | number | undefined>;
   /** Internal: prevents infinite retry loops after a refresh attempt. */
   _retried?: boolean;
+  signal?: AbortSignal;
 }
 
 export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body, query, _retried = false } = opts;
+  const { method = "GET", body, query, _retried = false, signal } = opts;
 
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
   if (query) {
@@ -131,12 +132,13 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
     headers,
     credentials: "include",
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    signal,
   });
 
   if (res.status === 401 && !_retried) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
-      return apiRequest<T>(path, { ...opts, _retried: true });
+      return apiRequest<T>(path, { ...opts, _retried: true, signal });
     }
   }
 

@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { Button } from "./ui/Button";
 import { LOGO_DATA_URI } from "../assets/logo";
+import { GlobalSearch } from "./GlobalSearch";
 
 const NAV_ITEMS: { to: string; label: string; end: boolean; activePrefix?: string }[] = [
   { to: "/", label: "Dashboard", end: true },
@@ -59,11 +60,12 @@ export function Shell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className="ml-60 flex-1 print:ml-0">
-          <header className="flex h-16 items-center justify-between border-b border-border bg-surface px-8 no-print">
-            <div className="font-mono-data text-xs text-ink-muted">
+          <header className="flex min-h-16 items-center gap-6 border-b border-border bg-surface px-8 py-3 no-print">
+            <div className="hidden shrink-0 font-mono-data text-xs text-ink-muted xl:block">
               IMADI Fulfilment and Logistics Ltd
             </div>
-            <div className="flex items-center gap-4">
+            <GlobalSearch />
+            <div className="ml-auto flex shrink-0 items-center gap-4">
               <div className="text-right">
                 <div className="text-sm font-medium leading-tight">{user?.full_name}</div>
                 <div className="text-xs text-ink-muted leading-tight">{user?.email}</div>
