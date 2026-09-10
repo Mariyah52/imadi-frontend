@@ -41,7 +41,7 @@ export function GlobalSearch() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         inputRef.current?.focus();
