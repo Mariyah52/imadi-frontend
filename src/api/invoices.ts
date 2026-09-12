@@ -12,9 +12,10 @@ export function listInvoices(
   status: string | undefined,
   page: number,
   pageSize = 20,
+  search?: string,
 ) {
   return apiRequest<PaginatedInvoices>("/invoices", {
-    query: { customer_id: customerId, status, page, page_size: pageSize },
+    query: { customer_id: customerId, status, search, page, page_size: pageSize },
   });
 }
 

@@ -24,6 +24,8 @@ export function InvoicesListPage() {
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<InvoiceSummary[]>([]);
@@ -33,12 +35,20 @@ export function InvoicesListPage() {
   const pageSize = 20;
 
   useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
     listCustomers("", 1, 100).then((res) => setCustomers(res.items)).catch(() => {});
   }, []);
 
   function load() {
     setLoading(true);
-    listInvoices(customerId || undefined, status || undefined, page, pageSize)
+    listInvoices(customerId || undefined, status || undefined, page, pageSize, debouncedSearch || undefined)
       .then((res) => {
         setItems(
           res.items.slice().sort((a, b) => b.invoice_number.localeCompare(a.invoice_number)),
@@ -49,7 +59,7 @@ export function InvoicesListPage() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(load, [page, status, customerId]);
+  useEffect(load, [page, status, customerId, debouncedSearch]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -68,6 +78,18 @@ export function InvoicesListPage() {
       </div>
 
       <div className="mb-4 flex items-center gap-2 flex-wrap">
+
+        <input
+    type="search"
+    value={search}
+    onChange={(e) => {
+      setSearch(e.target.value);
+      setPage(1);
+    }}
+    placeholder="Search customer or invoice..."
+    className="w-full sm:w-64 rounded-md border border-border bg-white px-3 py-1.5 text-sm text-ink"
+  />
+
         {STATUSES.map((s) => (
           <button
             key={s || "all"}
