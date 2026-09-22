@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createInvoice } from "../../api/invoices";
 import { ApiError } from "../../api/client";
@@ -9,6 +9,10 @@ import { Card } from "../../components/ui/Card";
 import { CustomerPicker } from "./CustomerPicker";
 import { ProductLineInput } from "./ProductLineInput";
 import { todayISO } from "../../lib/format";
+import { useHotkey, formatHotkey, type Hotkey } from "../../lib/useHotkey";
+
+const ADD_LINE_HOTKEY: Hotkey = { key: "l", alt: true };
+const SUBMIT_HOTKEY: Hotkey = { key: "Enter", ctrl: true };
 
 function emptyItem(chargesVat: boolean): InvoiceItemCreateRequest {
   return {
@@ -22,6 +26,7 @@ function emptyItem(chargesVat: boolean): InvoiceItemCreateRequest {
 
 export function CreateInvoicePage() {
   const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [issueDate, setIssueDate] = useState(todayISO());
   const [dueDate, setDueDate] = useState(new Date(Date.now() + 7*24*60*60*1000).toISOString().slice(0,10));
@@ -30,6 +35,13 @@ export function CreateInvoicePage() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useHotkey(ADD_LINE_HOTKEY, () => {
+    setItems((prev) => [...prev, emptyItem(customer?.charges_vat ?? true)]);
+  });
+  useHotkey(SUBMIT_HOTKEY, () => {
+    if (!submitting) formRef.current?.requestSubmit();
+  });
 
   function updateItem(index: number, patch: Partial<InvoiceItemCreateRequest>) {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
@@ -92,7 +104,7 @@ export function CreateInvoicePage() {
     <div>
       <h1 className="font-display text-xl font-semibold text-ink mb-6">New invoice</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <Field label="Customer">
@@ -128,7 +140,8 @@ export function CreateInvoicePage() {
             <h2 className="text-sm font-medium text-ink-muted">Line items</h2>
             <Button
               type="button"
-              variant="ghost"
+              variant="primary"
+              shortcutHint={formatHotkey(ADD_LINE_HOTKEY)}
               onClick={() => setItems((prev) => [...prev, emptyItem(customer?.charges_vat ?? true)])}
             >
               Add line
@@ -216,7 +229,7 @@ export function CreateInvoicePage() {
         {error && <p className="text-sm text-negative">{error}</p>}
 
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting} shortcutHint={formatHotkey(SUBMIT_HOTKEY)}>
             {submitting ? "Creating…" : "Create draft invoice"}
           </Button>
         </div>
