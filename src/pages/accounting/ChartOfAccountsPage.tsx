@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listAccounts } from "../../api/accounting";
 import type { Account, AccountType } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -20,6 +21,7 @@ const TYPE_TONE: Record<AccountType, string> = {
 
 export function ChartOfAccountsPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("accounting:manage") });
   const [typeFilter, setTypeFilter] = useState<AccountType | "">("");
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export function ChartOfAccountsPage() {
       <div className="mt-3 mb-6 flex items-center justify-between">
         <h1 className="font-display text-xl font-semibold text-ink">Chart of accounts</h1>
         {hasPermission("accounting:manage") && (
-          <Button onClick={() => setShowCreate(true)}>New account</Button>
+          <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New account</Button>
         )}
       </div>
 

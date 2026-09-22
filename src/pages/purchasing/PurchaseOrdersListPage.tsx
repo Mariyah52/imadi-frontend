@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listPurchaseOrders } from "../../api/purchasing";
 import { PurchasingTabs } from "./PurchasingTabs";
 import type { PurchaseOrderSummary } from "../../types/api";
@@ -21,6 +22,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function PurchaseOrdersListPage() {
+  const navigate = useNavigate();
+  useHotkey({ key: "n", alt: true }, () => navigate("/purchasing/orders/new"));
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -54,7 +57,7 @@ export function PurchaseOrdersListPage() {
         </div>
         {hasPermission("purchasing:create") && (
           <Link to="/purchasing/orders/new">
-            <Button>New purchase order</Button>
+            <Button shortcutHint="Alt N">New purchase order</Button>
           </Link>
         )}
       </div>

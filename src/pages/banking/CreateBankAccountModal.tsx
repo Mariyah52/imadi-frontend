@@ -3,6 +3,7 @@ import { createBankAccount } from "../../api/banking";
 import { ApiError } from "../../api/client";
 import type { BankAccountKind } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { todayISO } from "../../lib/format";
@@ -46,11 +47,13 @@ export function CreateBankAccountModal({
     }
   }
 
+  const formRef = useModalHotkeys(onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4 py-8 overflow-y-auto">
       <Card className="w-full max-w-md p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">New bank/cash account</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Name">
             <Input required value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
@@ -98,10 +101,10 @@ export function CreateBankAccountModal({
           </div>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose} shortcutHint="Esc">
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Creating…" : "Create account"}
             </Button>
           </div>

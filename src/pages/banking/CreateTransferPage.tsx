@@ -4,6 +4,7 @@ import { createBankTransfer, listBankAccounts } from "../../api/banking";
 import { ApiError } from "../../api/client";
 import type { BankAccount } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { todayISO } from "../../lib/format";
@@ -49,6 +50,8 @@ export function CreateTransferPage() {
     }
   }
 
+  const formRef = useModalHotkeys();
+
   return (
     <div>
       <Link to="/banking" className="text-sm text-navy-800 hover:underline">
@@ -57,7 +60,7 @@ export function CreateTransferPage() {
       <h1 className="font-display text-xl font-semibold text-ink mt-3 mb-6">New transfer</h1>
 
       <Card className="p-5 max-w-lg">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="From account">
             <select
               required
@@ -113,7 +116,7 @@ export function CreateTransferPage() {
           </Field>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="flex justify-end">
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Transferring…" : "Create transfer"}
             </Button>
           </div>

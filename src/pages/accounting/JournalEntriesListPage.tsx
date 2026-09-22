@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listJournalEntries } from "../../api/accounting";
 import type { JournalEntrySummary } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -16,6 +17,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function JournalEntriesListPage() {
+  const navigate = useNavigate();
+  useHotkey({ key: "n", alt: true }, () => navigate("/accounting/journal-entries/new"));
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -53,7 +56,7 @@ export function JournalEntriesListPage() {
         </div>
         {hasPermission("accounting:manage") && (
           <Link to="/accounting/journal-entries/new">
-            <Button>New entry</Button>
+            <Button shortcutHint="Alt N">New entry</Button>
           </Link>
         )}
       </div>

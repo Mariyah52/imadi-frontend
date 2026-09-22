@@ -4,6 +4,8 @@ import { createPurchaseOrder } from "../../api/purchasing";
 import { ApiError } from "../../api/client";
 import type { PurchaseOrderItemCreateRequest, Supplier } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
+import { useHotkey } from "../../lib/useHotkey";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { SupplierPicker } from "./SupplierPicker";
@@ -59,11 +61,14 @@ export function CreatePurchaseOrderPage() {
     }
   }
 
+  const formRef = useModalHotkeys();
+  useHotkey({ key: "l", alt: true }, () => setItems((prev) => [...prev, emptyItem()]));
+
   return (
     <div>
       <h1 className="font-display text-xl font-semibold text-ink mb-6">New purchase order</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Field label="Supplier">
@@ -81,7 +86,7 @@ export function CreatePurchaseOrderPage() {
         <Card className="p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-medium text-ink-muted">Line items</h2>
-            <Button type="button" variant="ghost" onClick={() => setItems((prev) => [...prev, emptyItem()])}>
+            <Button type="button" variant="primary" shortcutHint="Alt L" onClick={() => setItems((prev) => [...prev, emptyItem()])}>
               Add line
             </Button>
           </div>
@@ -152,7 +157,7 @@ export function CreatePurchaseOrderPage() {
         {error && <p className="text-sm text-negative">{error}</p>}
 
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
             {submitting ? "Creating…" : "Create draft PO"}
           </Button>
         </div>

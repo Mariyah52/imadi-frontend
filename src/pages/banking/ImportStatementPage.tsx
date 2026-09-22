@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { importStatement } from "../../api/banking";
 import { ApiError } from "../../api/client";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { Textarea } from "../../components/ui/Textarea";
@@ -38,6 +39,8 @@ export function ImportStatementPage() {
     }
   }
 
+  const formRef = useModalHotkeys();
+
   return (
     <div>
       <Link to={`/banking/accounts/${id}`} className="text-sm text-navy-800 hover:underline">
@@ -49,7 +52,7 @@ export function ImportStatementPage() {
       </p>
 
       <Card className="p-5 max-w-2xl">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="File name">
             <Input required value={fileName} onChange={(e) => setFileName(e.target.value)} />
           </Field>
@@ -84,7 +87,7 @@ export function ImportStatementPage() {
           </Field>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="flex justify-end">
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Importing…" : "Import statement"}
             </Button>
           </div>

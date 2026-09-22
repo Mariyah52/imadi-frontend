@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import {
   getRolePermissions,
   grantPermissionToRole,
@@ -17,6 +18,7 @@ import { useAuth } from "../../auth/AuthContext";
 export function RolesPage() {
   const { hasPermission } = useAuth();
   const canManage = hasPermission("security:manage_roles");
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: canManage });
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -88,7 +90,7 @@ export function RolesPage() {
 
       <div className="mt-3 mb-6 flex items-center justify-between">
         <h1 className="font-display text-xl font-semibold text-ink">Roles &amp; permissions</h1>
-        {canManage && <Button onClick={() => setShowCreate(true)}>New role</Button>}
+        {canManage && <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New role</Button>}
       </div>
 
       {error && <p className="mb-4 text-sm text-negative">{error}</p>}

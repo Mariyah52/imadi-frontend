@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createDriver } from "../../api/logistics";
 import { ApiError } from "../../api/client";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 
@@ -40,11 +41,13 @@ export function CreateDriverModal({
     }
   }
 
+  const formRef = useModalHotkeys(onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4">
       <Card className="w-full max-w-sm p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">New driver</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <Field label="First name">
               <Input required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -69,10 +72,10 @@ export function CreateDriverModal({
           </Field>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose} shortcutHint="Esc">
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Creating…" : "Create driver"}
             </Button>
           </div>

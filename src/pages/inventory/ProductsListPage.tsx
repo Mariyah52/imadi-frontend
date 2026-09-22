@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listLowStockProducts, listProducts } from "../../api/inventory";
 import type { LowStockProduct, Product } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -12,6 +13,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 export function ProductsListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("inventory:manage") });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Product[]>([]);
@@ -61,7 +63,7 @@ export function ProductsListPage() {
             <Link to="/inventory/warehouses">
               <Button variant="secondary">Warehouses</Button>
             </Link>
-            <Button onClick={() => setShowCreate(true)}>New product</Button>
+            <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New product</Button>
           </div>
         )}
       </div>

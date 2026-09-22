@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listSuppliers } from "../../api/suppliers";
 import type { Supplier } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -11,6 +12,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 export function SuppliersListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("suppliers:create") });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Supplier[]>([]);
@@ -49,7 +51,7 @@ export function SuppliersListPage() {
           <p className="text-sm text-ink-muted">{total} total</p>
         </div>
         {hasPermission("suppliers:create") && (
-          <Button onClick={() => setShowCreate(true)}>New supplier</Button>
+          <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New supplier</Button>
         )}
       </div>
 

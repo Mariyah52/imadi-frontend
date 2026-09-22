@@ -5,6 +5,7 @@ import { listDrivers, listVehicles } from "../../api/logistics";
 import { ApiError } from "../../api/client";
 import type { Customer, Driver, Vehicle } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { CustomerPicker } from "../invoices/CustomerPicker";
@@ -54,6 +55,8 @@ export function CreateShipmentPage() {
     }
   }
 
+  const formRef = useModalHotkeys();
+
   return (
     <div>
       <Link to="/logistics/shipments" className="text-sm text-navy-800 hover:underline">
@@ -62,7 +65,7 @@ export function CreateShipmentPage() {
       <h1 className="font-display text-xl font-semibold text-ink mt-3 mb-6">New shipment</h1>
 
       <Card className="p-5 max-w-lg">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Customer">
             <CustomerPicker value={customer} onChange={setCustomer} />
           </Field>
@@ -117,7 +120,7 @@ export function CreateShipmentPage() {
           </div>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="flex justify-end">
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Creating…" : "Create shipment"}
             </Button>
           </div>

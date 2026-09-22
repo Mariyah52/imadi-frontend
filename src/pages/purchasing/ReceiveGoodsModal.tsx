@@ -4,6 +4,7 @@ import { listWarehouses } from "../../api/inventory";
 import { ApiError } from "../../api/client";
 import type { PurchaseOrderItem, Warehouse } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 
@@ -59,11 +60,13 @@ export function ReceiveGoodsModal({
     }
   }
 
+  const formRef = useModalHotkeys(onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4 py-8 overflow-y-auto">
       <Card className="w-full max-w-lg p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">Receive goods</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <Field label="Warehouse">
               <select
@@ -108,10 +111,10 @@ export function ReceiveGoodsModal({
 
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose} shortcutHint="Esc">
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting || !warehouseId}>
+            <Button type="submit" disabled={submitting || !warehouseId} shortcutHint="Ctrl Enter">
               {submitting ? "Recording…" : "Confirm receipt"}
             </Button>
           </div>

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { createVehicle } from "../../api/logistics";
 import { ApiError } from "../../api/client";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 
@@ -40,11 +41,13 @@ export function CreateVehicleModal({
     }
   }
 
+  const formRef = useModalHotkeys(onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4">
       <Card className="w-full max-w-sm p-6">
         <h2 className="font-display text-lg font-semibold text-ink mb-4">New vehicle</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Registration">
             <Input required value={registration} onChange={(e) => setRegistration(e.target.value)} />
           </Field>
@@ -76,10 +79,10 @@ export function CreateVehicleModal({
           </div>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose} shortcutHint="Esc">
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting} shortcutHint="Ctrl Enter">
               {submitting ? "Creating…" : "Create vehicle"}
             </Button>
           </div>

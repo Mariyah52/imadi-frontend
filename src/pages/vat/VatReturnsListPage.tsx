@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listVatReturns } from "../../api/vat";
 import type { VatReturnSummary } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -16,6 +17,7 @@ const STATUS_TONE: Record<string, string> = {
 
 export function VatReturnsListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("vat:manage") });
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<VatReturnSummary[]>([]);
@@ -51,7 +53,7 @@ export function VatReturnsListPage() {
           <h1 className="font-display text-xl font-semibold text-ink mb-1">VAT returns</h1>
           <p className="text-sm text-ink-muted">{total} total</p>
         </div>
-        {hasPermission("vat:manage") && <Button onClick={() => setShowCreate(true)}>New return</Button>}
+        {hasPermission("vat:manage") && <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New return</Button>}
       </div>
 
       <Card>

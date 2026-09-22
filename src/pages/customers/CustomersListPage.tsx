@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listCustomers } from "../../api/customers";
 import type { Customer } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -12,6 +13,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 export function CustomersListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("customers:create") });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<Customer[]>([]);
@@ -53,7 +55,7 @@ export function CustomersListPage() {
           <p className="text-sm text-ink-muted">{total} total</p>
         </div>
         {hasPermission("customers:create") && (
-          <Button onClick={() => setShowCreate(true)}>New customer</Button>
+          <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New customer</Button>
         )}
       </div>
 

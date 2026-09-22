@@ -3,6 +3,7 @@ import { restoreBackup } from "../../api/security";
 import { ApiError } from "../../api/client";
 import type { RestoreResult } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 
@@ -43,6 +44,8 @@ export function RestoreBackupModal({
     }
   }
 
+  const formRef = useModalHotkeys(onClose);
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-navy-950/40 px-4">
       <Card className="w-full max-w-md p-6">
@@ -52,7 +55,7 @@ export function RestoreBackupModal({
           inspect before trusting it. Only fill it in to restore in place, which overwrites all
           current data.
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Target database (optional — leave blank for a safe scratch restore)">
             <Input value={targetDbname} onChange={(e) => setTargetDbname(e.target.value)} />
           </Field>
@@ -72,10 +75,10 @@ export function RestoreBackupModal({
           </label>
           {error && <p className="text-sm text-negative">{error}</p>}
           <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" variant="secondary" onClick={onClose} shortcutHint="Esc">
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting || !confirmed}>
+            <Button type="submit" disabled={submitting || !confirmed} shortcutHint="Ctrl Enter">
               {submitting ? "Restoring…" : "Restore"}
             </Button>
           </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listInvoices } from "../../api/invoices";
 import { listCustomers } from "../../api/customers";
 import type { Customer, InvoiceSummary } from "../../types/api";
@@ -21,6 +22,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function InvoicesListPage() {
+  const navigate = useNavigate();
+  useHotkey({ key: "n", alt: true }, () => navigate("/invoices/new"));
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [customerId, setCustomerId] = useState("");
@@ -72,7 +75,7 @@ export function InvoicesListPage() {
         </div>
         {hasPermission("invoices:create") && (
           <Link to="/invoices/new">
-            <Button>New invoice</Button>
+            <Button shortcutHint="Alt N">New invoice</Button>
           </Link>
         )}
       </div>

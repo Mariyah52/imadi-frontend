@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listShipments } from "../../api/logistics";
 import type { ShipmentSummary } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -30,6 +31,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function ShipmentsListPage() {
+  const navigate = useNavigate();
+  useHotkey({ key: "n", alt: true }, () => navigate("/logistics/shipments/new"));
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -63,7 +66,7 @@ export function ShipmentsListPage() {
         </div>
         {hasPermission("logistics:create") && (
           <Link to="/logistics/shipments/new">
-            <Button>New shipment</Button>
+            <Button shortcutHint="Alt N">New shipment</Button>
           </Link>
         )}
       </div>

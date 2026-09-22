@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listBills } from "../../api/purchasing";
 import { listSuppliers } from "../../api/suppliers";
 import { PurchasingTabs } from "./PurchasingTabs";
@@ -23,6 +24,8 @@ const STATUS_TONE: Record<string, string> = {
 };
 
 export function BillsListPage() {
+  const navigate = useNavigate();
+  useHotkey({ key: "n", alt: true }, () => navigate("/purchasing/bills/new"));
   const { hasPermission } = useAuth();
   const [status, setStatus] = useState("");
   const [supplierId, setSupplierId] = useState("");
@@ -62,7 +65,7 @@ export function BillsListPage() {
         </div>
         {hasPermission("purchasing:create") && (
           <Link to="/purchasing/bills/new">
-            <Button>New purchase</Button>
+            <Button shortcutHint="Alt N">New purchase</Button>
           </Link>
         )}
       </div>

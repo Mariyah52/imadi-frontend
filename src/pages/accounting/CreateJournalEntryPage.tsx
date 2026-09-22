@@ -5,6 +5,8 @@ import { createJournalEntry } from "../../api/accounting";
 import { ApiError } from "../../api/client";
 import type { JournalLineRequest } from "../../types/api";
 import { Button } from "../../components/ui/Button";
+import { useModalHotkeys } from "../../lib/useModalHotkeys";
+import { useHotkey } from "../../lib/useHotkey";
 import { Field, Input } from "../../components/ui/Field";
 import { Card } from "../../components/ui/Card";
 import { AccountSelect } from "./AccountSelect";
@@ -56,6 +58,9 @@ export function CreateJournalEntryPage() {
     }
   }
 
+  const formRef = useModalHotkeys();
+  useHotkey({ key: "l", alt: true }, () => setLines((prev) => [...prev, emptyLine()]));
+
   return (
     <div>
       <Link to="/accounting/journal-entries" className="text-sm text-navy-800 hover:underline">
@@ -63,7 +68,7 @@ export function CreateJournalEntryPage() {
       </Link>
       <h1 className="font-display text-xl font-semibold text-ink mt-3 mb-6">New journal entry</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-6">
         <Card className="p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Entry date">
@@ -78,7 +83,7 @@ export function CreateJournalEntryPage() {
         <Card className="p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-medium text-ink-muted">Lines</h2>
-            <Button type="button" variant="ghost" onClick={() => setLines((prev) => [...prev, emptyLine()])}>
+            <Button type="button" variant="primary" shortcutHint="Alt L" onClick={() => setLines((prev) => [...prev, emptyLine()])}>
               Add line
             </Button>
           </div>
@@ -154,7 +159,7 @@ export function CreateJournalEntryPage() {
         {error && <p className="text-sm text-negative">{error}</p>}
 
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={submitting || !isBalanced}>
+          <Button type="submit" disabled={submitting || !isBalanced} shortcutHint="Ctrl Enter">
             {submitting ? "Creating…" : "Create draft entry"}
           </Button>
         </div>

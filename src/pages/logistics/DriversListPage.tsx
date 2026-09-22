@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listDrivers } from "../../api/logistics";
 import type { Driver } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -17,6 +18,7 @@ const STATUS_TONE: Record<string, string> = {
 
 export function DriversListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("logistics:manage") });
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export function DriversListPage() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="font-display text-xl font-semibold text-ink">Drivers</h1>
         {hasPermission("logistics:manage") && (
-          <Button onClick={() => setShowCreate(true)}>New driver</Button>
+          <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New driver</Button>
         )}
       </div>
 

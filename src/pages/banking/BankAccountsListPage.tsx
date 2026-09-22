@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { useHotkey } from "../../lib/useHotkey";
 import { listBankAccounts } from "../../api/banking";
 import type { BankAccount } from "../../types/api";
 import { Button } from "../../components/ui/Button";
@@ -11,6 +12,7 @@ import { useAuth } from "../../auth/AuthContext";
 
 export function BankAccountsListPage() {
   const { hasPermission } = useAuth();
+  useHotkey({ key: "n", alt: true }, () => setShowCreate(true), { enabled: hasPermission("banking:create") });
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export function BankAccountsListPage() {
             <Button variant="secondary">New transfer</Button>
           </Link>
           {hasPermission("banking:create") && (
-            <Button onClick={() => setShowCreate(true)}>New account</Button>
+            <Button onClick={() => setShowCreate(true)} shortcutHint="Alt N">New account</Button>
           )}
         </div>
       </div>
