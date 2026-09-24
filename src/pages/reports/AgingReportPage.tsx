@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
+import { downloadFile } from "../../api/client";
 import { getCustomerAging, getSupplierAging } from "../../api/reports";
 import type { AgingReport } from "../../api/reports";
 import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
 import { Field, Input } from "../../components/ui/Field";
 import { formatMoney, todayISO } from "../../lib/format";
 
@@ -13,6 +15,7 @@ export function AgingReportPage() {
   const [asOf, setAsOf] = useState(todayISO());
   const [report, setReport] = useState<AgingReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState<"pdf" | "excel" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,14 +27,47 @@ export function AgingReportPage() {
       .finally(() => setLoading(false));
   }, [asOf, type]);
 
+  async function handleDownload(format: "pdf" | "excel") {
+    setDownloading(format);
+    setError(null);
+    try {
+      const ext = format === "pdf" ? "pdf" : "xlsx";
+      const endpoint = type === "supplier" ? "supplier-aging" : "customer-aging";
+      const path = `/reports/${endpoint}?as_of=${asOf}&export=${format}`;
+      await downloadFile(path, `${endpoint}.${ext}`);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't download the report.");
+    } finally {
+      setDownloading(null);
+    }
+  }
+
   return (
     <div>
       <Link to="/reports" className="text-sm text-navy-800 hover:underline">
         ← Reports
       </Link>
-      <h1 className="font-display text-xl font-semibold text-ink mt-3 mb-6 capitalize">
-        {type} aging
-      </h1>
+      <div className="mt-3 mb-6 flex items-center justify-between">
+        <h1 className="font-display text-xl font-semibold text-ink capitalize">{type} aging</h1>
+        {report && (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              disabled={downloading !== null}
+              onClick={() => handleDownload("pdf")}
+            >
+              {downloading === "pdf" ? "Downloading…" : "Download PDF"}
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={downloading !== null}
+              onClick={() => handleDownload("excel")}
+            >
+              {downloading === "excel" ? "Downloading…" : "Download Excel"}
+            </Button>
+          </div>
+        )}
+      </div>
 
       <Card className="p-5 mb-6 max-w-xs">
         <Field label="As of">

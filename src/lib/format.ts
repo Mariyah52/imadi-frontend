@@ -27,3 +27,9 @@ export function currentQuarter() {
   const end = new Date(d.getFullYear(), qStartMonth + 3, 0);
   return { start: start.toISOString().slice(0, 10), end: end.toISOString().slice(0, 10) };
 }
+
+export function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}

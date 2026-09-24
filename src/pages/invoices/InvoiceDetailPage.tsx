@@ -1,12 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { cancelInvoice, deleteInvoice, duplicateInvoice, getInvoice, postInvoice } from "../../api/invoices";
+import {
+  cancelInvoice,
+  deleteInvoice,
+  downloadInvoiceAttachment,
+  duplicateInvoice,
+  getInvoice,
+  listInvoiceAttachments,
+  postInvoice,
+  removeInvoiceAttachment,
+  uploadInvoiceAttachment,
+  type InvoiceAttachment,
+} from "../../api/invoices";
 import { getCustomerProfile, listAddresses } from "../../api/customers";
 import type { Address, Invoice } from "../../types/api";
 import { Card } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { formatMoney } from "../../lib/format";
+import { formatFileSize, formatMoney } from "../../lib/format";
 import { RecordPaymentModal } from "./RecordPaymentModal";
 import { CreditNoteModal } from "./CreditNoteModal";
 import { SendEmailModal } from "./SendEmailModal";
@@ -41,6 +52,10 @@ export function InvoiceDetailPage() {
   const [showCancelReason, setShowCancelReason] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [attachments, setAttachments] = useState<InvoiceAttachment[]>([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function load() {
     if (!id) return;
@@ -57,6 +72,9 @@ export function InvoiceDetailPage() {
       })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load this invoice."))
       .finally(() => setLoading(false));
+    listInvoiceAttachments(id)
+      .then(setAttachments)
+      .catch(() => {});
   }
 
   useEffect(load, [id]);
@@ -118,6 +136,44 @@ export function InvoiceDetailPage() {
     }
   }
 
+  async function handleFileSelected(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file || !id) return;
+    setUploadingFile(true);
+    setAttachmentError(null);
+    try {
+      const uploaded = await uploadInvoiceAttachment(id, file);
+      setAttachments((prev) => [uploaded, ...prev]);
+    } catch (err) {
+      setAttachmentError(err instanceof ApiError ? err.message : "Couldn't attach this file.");
+    } finally {
+      setUploadingFile(false);
+    }
+  }
+
+  async function handleDownloadAttachment(attachmentId: string, fileName: string) {
+    if (!id) return;
+    setAttachmentError(null);
+    try {
+      await downloadInvoiceAttachment(id, attachmentId, fileName);
+    } catch (err) {
+      setAttachmentError(err instanceof ApiError ? err.message : "Couldn't download this file.");
+    }
+  }
+
+  async function handleRemoveAttachment(attachmentId: string) {
+    if (!id) return;
+    if (!window.confirm("Remove this attachment?")) return;
+    setAttachmentError(null);
+    try {
+      await removeInvoiceAttachment(id, attachmentId);
+      setAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+    } catch (err) {
+      setAttachmentError(err instanceof ApiError ? err.message : "Couldn't remove this file.");
+    }
+  }
+
   if (loading) return <p className="text-sm text-ink-muted">Loading…</p>;
   if (error) return <p className="text-sm text-negative">{error}</p>;
   if (!invoice || !id) return null;
@@ -163,6 +219,7 @@ export function InvoiceDetailPage() {
       </div>
 
       {actionError && <p className="mb-4 text-sm text-negative">{actionError}</p>}
+      {attachmentError && <p className="mb-4 text-sm text-negative">{attachmentError}</p>}
 
       <div className="mb-6 flex flex-wrap gap-2 no-print">
         {isDraft && canEdit && (
@@ -210,6 +267,23 @@ export function InvoiceDetailPage() {
           <Button variant="secondary" disabled={busy} onClick={() => setShowEmail(true)}>
             Send email
           </Button>
+        )}
+        {canEdit && (
+          <>
+            <Button
+              variant="secondary"
+              disabled={uploadingFile}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploadingFile ? "Attaching…" : "Attach file"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleFileSelected}
+            />
+          </>
         )}
       </div>
 
@@ -312,6 +386,37 @@ export function InvoiceDetailPage() {
 
       <Card className="p-5 mt-6 break-inside-avoid">
         <InvoicePaymentDetails invoiceNumber={invoice.invoice_number} />
+        {attachments.length > 0 && (
+          <div className="mt-4 border-t border-border pt-4 no-print">
+            <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-ink-muted">
+              Attachments
+            </p>
+            <ul className="mx-auto max-w-sm space-y-1.5">
+              {attachments.map((a) => (
+                <li key={a.id} className="flex items-center justify-between gap-2 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadAttachment(a.id, a.file_name)}
+                    className="truncate text-navy-800 hover:underline text-left"
+                    title={a.file_name}
+                  >
+                    {a.file_name}
+                  </button>
+                  <span className="shrink-0 text-xs text-ink-muted">{formatFileSize(a.size_bytes)}</span>
+                  {canEdit && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttachment(a.id)}
+                      className="shrink-0 text-xs text-negative hover:underline"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Card>
       </div>
 

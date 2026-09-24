@@ -1,4 +1,4 @@
-import { apiRequest, uploadFormData } from "./client";
+import { apiRequest, downloadFile, uploadFormData } from "./client";
 import type {
   Invoice,
   InvoiceCreateRequest,
@@ -78,6 +78,34 @@ export function emailInvoice(id: string, toEmail: string, message?: string, atta
     formData.append("attachments", file);
   }
   return uploadFormData<void>(`/invoices/${id}/email`, formData);
+}
+
+export interface InvoiceAttachment {
+  id: string;
+  file_name: string;
+  content_type: string;
+  size_bytes: number;
+  storage_path: string;
+  uploaded_by: string | null;
+  created_at: string;
+}
+
+export function listInvoiceAttachments(id: string) {
+  return apiRequest<InvoiceAttachment[]>(`/invoices/${id}/attachments`);
+}
+
+export function uploadInvoiceAttachment(id: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return uploadFormData<InvoiceAttachment>(`/invoices/${id}/attachments/upload`, formData);
+}
+
+export function removeInvoiceAttachment(id: string, attachmentId: string) {
+  return apiRequest<void>(`/invoices/${id}/attachments/${attachmentId}`, { method: "DELETE" });
+}
+
+export function downloadInvoiceAttachment(id: string, attachmentId: string, fileName: string) {
+  return downloadFile(`/invoices/${id}/attachments/${attachmentId}/download`, fileName);
 }
 
 export function updateInvoice(
