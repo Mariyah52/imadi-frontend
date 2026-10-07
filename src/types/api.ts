@@ -363,6 +363,14 @@ export interface InvoiceItemCreateRequest {
   vat_treatment?: Product["vat_treatment"];
 }
 
+export interface InvoiceCreditNote {
+  id: string;
+  credit_note_number: string;
+  amount: string;
+  credit_date: string;
+  reason: string | null;
+}
+
 export interface Invoice {
   id: string;
   invoice_number: string;
@@ -380,6 +388,9 @@ export interface Invoice {
   total: string;
   amount_paid: string;
   balance: string;
+  original_total?: string;
+  credit_total?: string;
+  credit_notes?: InvoiceCreditNote[];
   notes: string | null;
   terms: string | null;
   journal_entry_id: string | null;

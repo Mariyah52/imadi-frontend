@@ -341,10 +341,54 @@ export function InvoiceDetailPage() {
         <Card className="p-5">
           <span className="text-sm text-ink-muted">Total</span>
           <div className="mt-1 font-display text-lg font-semibold">
-            {formatMoney(invoice.total, invoice.currency)}
+            {formatMoney(invoice.original_total ?? invoice.total, invoice.currency)}
           </div>
         </Card>
       </div>
+
+      {(invoice.credit_notes ?? []).length > 0 && (
+        <Card className="mb-6">
+          <div className="px-5 pt-5 pb-2 font-display text-base font-semibold">Credit notes applied</div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-ink-muted">
+                <th className="px-5 py-3 font-medium">Credit note</th>
+                <th className="px-5 py-3 font-medium">Date</th>
+                <th className="px-5 py-3 font-medium">Reason</th>
+                <th className="px-5 py-3 font-medium text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(invoice.credit_notes ?? []).map((c) => (
+                <tr key={c.id} className="border-b border-border last:border-0">
+                  <td className="px-5 py-3 font-mono-data">{c.credit_note_number}</td>
+                  <td className="px-5 py-3">{c.credit_date}</td>
+                  <td className="px-5 py-3">{c.reason || "—"}</td>
+                  <td className="px-5 py-3 text-right font-mono-data">
+                    -{formatMoney(c.amount, invoice.currency)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="border-t border-border px-5 py-4 text-sm space-y-1">
+            <div className="flex justify-between">
+              <span className="text-ink-muted">Invoice total</span>
+              <span className="font-mono-data">
+                {formatMoney(invoice.original_total ?? invoice.total, invoice.currency)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-ink-muted">Credit notes applied</span>
+              <span className="font-mono-data">-{formatMoney(invoice.credit_total ?? "0", invoice.currency)}</span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Net payable</span>
+              <span className="font-mono-data">{formatMoney(invoice.total, invoice.currency)}</span>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <Card>
         <div className="px-5 pt-5"></div>
